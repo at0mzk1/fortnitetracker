@@ -1,0 +1,31 @@
+.google-login {
+    background: rgb(209, 72, 54) none repeat scroll 0% 0%; 
+    color: rgb(255, 255, 255); 
+    width: 100%; 
+    border-radius: 2px; 
+    border: 1px solid transparent; 
+    font-size: 16px; 
+    font-weight: bold; 
+    font-family: Roboto;
+}
+
+.facebook-login {
+    font-family: Helvetica,sans-serif;
+    width: 100%; 
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    background-color: #4c69ba;
+    border: 1px solid #4c69ba;
+    border-radius: 2px;
+}
+
+.formgroup-centered {
+    text-align: center;
+}
+
+.login-nav-tab > li > a {
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
