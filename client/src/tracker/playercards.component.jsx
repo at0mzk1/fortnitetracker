@@ -31,7 +31,7 @@ class PlayerCards extends Component {
     }
 
     getPlayers() {
-        fetch('http://localhost:5000/players')
+        fetch('https://long-drink.glitch.me/players')
             .then((results) => results.json())
             .then(results => {
                 let playerCards = results.map((player, i) => {
@@ -43,7 +43,7 @@ class PlayerCards extends Component {
 
     render() {
         return (
-            <Grid>
+            <Grid bsClass="jumbotron">
                 {this.state.playerCards}
             </Grid>
         )

@@ -5,7 +5,7 @@ class Tracker extends Component {
 
     render() {
         return (
-            <PlayerCards/>
+                <PlayerCards/>
         )
     }
 

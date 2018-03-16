@@ -94,19 +94,23 @@ getPlayerInfo = (i) => {
     console.log("Player info updated: ", users[i]);
 }
 
-app.get('/api/:user', (req, res) => {
-    // request({
-    //     uri: 'https://api.fortnitetracker.com/v1/profile/psn/' + req.params.user,
-    //     qs: {
-    //     },
-    //     headers: {
-    //         'TRN-Api-Key': '92966a1e-ff13-4493-92e6-e44679f2e550'
-    //     },
-    //     json: true
-    // }).then((res) => res.json())
-    //     .then(res => {
-    //         console.log(res);
-    //     });
+app.get('/api/test', (req, res) => {
+    var options = {
+        uri: 'https://api.fortnitetracker.com/v1/profile/psn/' + users[0],
+        qs: {
+        },
+        headers: {
+            'TRN-Api-Key': '92966a1e-ff13-4493-92e6-e44679f2e550'
+        },
+        json: true
+    }
+
+    rp(options).then((response) => {
+        response.json;
+        Players = cleanResponse.cleanResponse(response);
+        res.send(cleanResponse.cleanResponse(response));
+    })
+    
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

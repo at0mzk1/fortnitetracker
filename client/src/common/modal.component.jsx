@@ -49,13 +49,12 @@ class MyLargeModal extends Component {
                         <Row>
                             <Col sm={6} className="formgroup-centered" >
                                 <GoogleLogin
-                                    clientId=" 669816818644-kk374gvqb31g9sc0ehoqlgcg81452dbh.apps.googleusercontent.com "
+                                    clientId="669816818644-kk374gvqb31g9sc0ehoqlgcg81452dbh.apps.googleusercontent.com"
                                     buttonText="Google"
                                     onSuccess={responseGoogle}
                                     onFailure={responseGoogle}
                                     className="google-login"
                                 />
-
                                 </Col>
                             <Col sm={6} className="formgroup-centered" >
                                 <FacebookLogin
