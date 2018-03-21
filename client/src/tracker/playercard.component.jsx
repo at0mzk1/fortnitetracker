@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Panel, Col, Nav, NavItem, Badge, Row, Grid, DropdownButton, MenuItem } from 'react-bootstrap';
+import { Panel, Col, Nav, NavItem, Badge, Row, Grid } from 'react-bootstrap';
 import './playercard.css';
 
 let styles = ["primary", "success", "info", "warning", "danger"];
@@ -33,12 +33,20 @@ class Player extends Component {
                     <Col lg={2} key={player.accountId}>
                 <Panel bsStyle={style}>
                             <Panel.Heading>
-                                <Panel.Title componentClass="h3">{player.name} <Badge pullRight>{player.stats.rating}</Badge></Panel.Title>
+                        <Panel.Title componentClass="h3">
+                            {player.name}
+                            <Badge pullRight>
+                                <a href="https://fortnitetracker.com/article/23/trn-rating-you" target="_blank" rel="noopener noreferrer">?</a>
+                            </Badge>
+                            <Badge pullRight>
+                                Rating: {player.stats.filter(item => item.season === this.state.activeSeasonKey).reverse()[this.state.activeModeKey].rating}
+                            </Badge>                           
+                        </Panel.Title>
                             </Panel.Heading>
                             <Panel.Body className="playerCardBody">
-                                <Nav justified="true" bsStyle="pills" activeKey={this.state.activeSeasonKey} onSelect={k => this.handleSelect("season", k)}>
-                                        <NavItem key={1} eventKey={"current"}>Current</NavItem>
-                                        <NavItem key={2} eventKey={"lifetime"}>Lifetime</NavItem>
+                                <Nav bsStyle="pills" activeKey={this.state.activeSeasonKey} onSelect={k => this.handleSelect("season", k)}>
+                                        <NavItem key={1} eventKey={"current"} className="seasonSelect">Current</NavItem>
+                                        <NavItem key={2} eventKey={"lifetime"} className="seasonSelect">Lifetime</NavItem>
                                 </Nav>
                         <PlayerSeasonStats key={this.state.activeSeasonKey} {...player.stats} nav={this.handleSelect} style={style} activeSeasonKey={this.state.activeSeasonKey} activeModeKey={this.state.activeModeKey}/>
                             </Panel.Body>
@@ -62,24 +70,16 @@ const PlayerSeasonStats = (props) => {
 
     return (
         <div className="playerCardStatBody">
-            <DropdownButton
-                bsStyle={props.style}
-                title={modeDetails[keys[props.activeModeKey]].mode}
-                key={Math.random()}
-                id={`dropdown-basic-${1}`}
-                className="modeDropdown"
-            >                
-            {/* <Nav bsStyle="tabs" activeKey={props.activeModeKey} onSelect={k => props.nav("mode", k)}> */}
+            <Nav bsStyle="pills" activeKey={props.activeModeKey} onSelect={k => props.nav("mode", k)}>
                 {
                     modeDetails.map((mode, i) => { 
                     if (mode.season === props.activeSeasonKey) {
-                        return (<MenuItem key={i} eventKey={i} onSelect={k => props.nav("mode", k)} className="modeDropdown">{mode.mode}</MenuItem>)
+                        return (<NavItem key={i} eventKey={i} className="modeLi">{mode.mode}</NavItem>)
                     }
                     return null;
                 } )
                 }
-            </DropdownButton>
-            {/* </Nav> */}
+            </Nav>
             <PlayerStats key={props.activeModeKey} {...modeDetails[keys[props.activeModeKey]]}/>
         </div>);
 }
@@ -96,10 +96,10 @@ let organizeData = (keys2, props, season) => {
 }
 
 const PlayerStats = (props) => {
-    let filter = ["id", "player_id", "season", "mode", "avg_match_time"];
+    let filter = ["id", "player_id", "season", "mode", "avg_match_time", "rating"];
     let keys = Object.keys(props).filter(item => !filter.includes(item));
     return (
-        <div>
+        <div className="playerCardStats">
             {keys.map((key, i) =>
                 <Stat key={i} value={props[key]} label={key} />
             )

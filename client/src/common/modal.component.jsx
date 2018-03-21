@@ -26,7 +26,9 @@ class MyLargeModal extends Component {
     render() {
         return (
             <Modal
-                {...this.props}
+                show={this.props.show} 
+                onHide={this.props.onHide}
+                onSelect={this.props.onSelect}
                 bsSize="small"
             >
                 <Modal.Header closeButton>
@@ -36,7 +38,7 @@ class MyLargeModal extends Component {
                     </Nav>
                 </Modal.Header>
                 <Modal.Body>
-                    {this.state.activeKey === 1 ? <LoginForm/> : <SignUpForm validationState={this.getValidationState}/>}
+                    {this.state.activeKey === 1 ? <LoginForm/> : <SignUpForm/>}
                 </Modal.Body>
                 <Modal.Footer>
                     <Grid fluid={true}>
@@ -73,23 +75,14 @@ class MyLargeModal extends Component {
         );
     }
 
-    handleChange(e) {
-        const name = e.target.name;
-        const value = e.target.value;
-        this.setState({ [name]: value });
-    }
-
-    getValidationState(e) {
-        const length = this.state.value.length;
-        if (length > 10) return 'success';
-        else if (length > 5) return 'warning';
-        else if (length > 0) return 'error';
-        return null;
-    }
 }
 
 const responseGoogle = (response) => {
+    if(response.profileObj){
     console.log(response);
+    }
+    else
+    console.log("Error autheticating with Google.");
 }
 
 const responseFacebook = (response) => {
@@ -116,8 +109,6 @@ const LoginForm = (props) => {
             </Checkbox>
             <Button type="submit">Login</Button>
         </Form>
-
-
     );
 }
 
@@ -128,25 +119,21 @@ const SignUpForm = (props) => {
                 id="formSignupLogin"
                 type="text"
                 placeholder="User ID"
-                validationState={props.validationState}
             />
             <FormControl
                 id="formSignupPassword"
                 type="password"
                 placeholder="Password"
-                validationState={props.validationState}
             />
             <FormControl
                 id="formSignupConfirmPassword"
                 type="password"
                 placeholder="Confirm Password"
-                validationState={props.validationState}
             />
             <FormControl
                 id="formSignupEmail"
                 type="email"
                 placeholder="Email"
-                validationState={props.validationState}
             />
             <FormControl.Feedback />
             <Button type="submit">Create Account</Button>

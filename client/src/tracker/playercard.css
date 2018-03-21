@@ -22,13 +22,33 @@
     padding-bottom: 10px;
 }
 
+.playerCardStats {
+    border-top: 2px;
+    border-color: #444;
+    padding-top: 5px;
+}
+
 .modeDropdown {
     width: 100%;
     border-radius: 0;
     text-align: center;
 }
 
+.modeLi {
+    width: 32%;
+}
+
 .dropdown-menu {
     width: 100%;
     padding-top: 0;
+}
+
+.seasonSelect {
+    width: 49%;
+}
+
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+    color: chartreuse;
+    background-color: transparent;
+    font-weight: bold;
 }

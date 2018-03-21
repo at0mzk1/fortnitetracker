@@ -24,6 +24,7 @@ module.exports.cleanResponse = function(data) {
             }
         }
         FortnitePlayer.top_10 = top10;
+        console.log(FortnitePlayer.name, top10);
         FortnitePlayerStats.push(FortnitePlayer);
         top10 = 0;
     }
