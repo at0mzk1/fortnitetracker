@@ -1,0 +1,19 @@
+{
+  "name": "pubg-friends",
+  "version": "1.0.0",
+  "scripts": {
+    "client": "cd client && yarn start",
+    "server": "node server",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+  },
+  "main": "index.js",
+  "repository": "https://at0mzk1@github.com/at0mzk1/fortnitetracker.git",
+  "author": "at0mzk1 <airmax8@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint-config-google": "^0.9.1"
+  },
+  "dependencies": {
+    "concurrently": "^3.5.1"
+  }
+}

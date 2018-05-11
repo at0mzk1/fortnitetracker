@@ -1,6 +1,7 @@
 .statInfo {
     font-size: 17px;
     color: rgb(255, 255, 255); 
+    display: inline-block;
 }
 
 .statRow {
@@ -51,4 +52,19 @@
     color: chartreuse;
     background-color: transparent;
     font-weight: bold;
+}
+
+.userId {
+    display: inline-block;
+    white-space: nowrap; 
+    width: 80px; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+@media only screen and (min-width: 768px)  {
+    .panel {
+    max-width: 217px;
+    max-height: 270px;
+}
 }

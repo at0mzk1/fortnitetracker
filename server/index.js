@@ -4,9 +4,17 @@ const Models = require('./models');
 var cleanResponse = require('./util/responseHandler.js');
 
 const app = express();
+const bodyParser = require("body-parser");
 const port = process.env.PORT || 5000;
 let Players = [];
 let users = ["Conciente", "jrxtepan", "rmena28", "hamlet_rannier", "erickcortorreal2", "micky0512", "wilo_net", "javierskeemrd", "luisfrankrd", "luisjoserd_", "LilRebelz", "littlerflow809", "LilJayO84"];
+
+let response = function (data, status) {
+    return {
+        "data": data,
+        "status": status
+    }
+};
 
 var cron = setInterval(function () {
     syncPlayers();
@@ -32,6 +40,10 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+
+
 app.get('/player/:player', function (req, res) {
     res.contentType('application/json');
     Models.player.findAll({
@@ -54,6 +66,24 @@ app.get('/players', function (req, res) {
         }]
     }).then(player => {
         res.send(player);
+    })
+});
+
+app.post('/user', function(req, res) {
+    console.log(req.body);
+    res.send("Response from API");
+});
+
+app.get('/user/:userId', function (req, res) {
+    Models.user.findAndCountAll({
+        where: {
+            userid: req.params.userId
+        }
+    }).then(user => {
+        if(user.count > 0)
+        res.send(user);
+        else
+            res.send({ "response" : "User not found"});
     })
 });
 
@@ -94,23 +124,5 @@ getPlayerInfo = (i) => {
     console.log("Player info updated: ", users[i]);
 }
 
-app.get('/api/test', (req, res) => {
-    var options = {
-        uri: 'https://api.fortnitetracker.com/v1/profile/psn/' + users[0],
-        qs: {
-        },
-        headers: {
-            'TRN-Api-Key': '92966a1e-ff13-4493-92e6-e44679f2e550'
-        },
-        json: true
-    }
-
-    rp(options).then((response) => {
-        response.json;
-        Players = cleanResponse.cleanResponse(response);
-        res.send(cleanResponse.cleanResponse(response));
-    })
-    
-});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

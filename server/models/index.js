@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var Sequelize = require('sequelize');
 var basename = path.basename(__filename);
+require('dotenv').config();
 var config = require('../config/db.js');
 var db = {};
 

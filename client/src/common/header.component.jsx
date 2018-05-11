@@ -22,7 +22,14 @@ class Header extends Component {
                     <Navbar.Brand>
                         Fortnite Friends Rankings <small>created by at0mz</small>
                     </Navbar.Brand>
+                    <Navbar.Toggle />
                 </Navbar.Header>
+                <Navbar.Collapse className="navBarMenu">
+                    <Nav className="menuItems">
+                        <NavItem eventKey={1} href="/">Home</NavItem>
+                        <NavItem eventKey={2} href="/tracker">Tracker</NavItem>
+                    </Nav>
+                </Navbar.Collapse>
                 <Nav pullRight>
                     <NavItem onClick={() => this.setState({ show: true })}>
                         Login

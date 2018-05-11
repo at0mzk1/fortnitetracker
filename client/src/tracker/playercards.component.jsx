@@ -43,7 +43,7 @@ class PlayerCards extends Component {
 
     render() {
         return (
-            <Grid bsClass="jumbotron">
+            <Grid fluid>
                 {this.state.playerCards}
             </Grid>
         )

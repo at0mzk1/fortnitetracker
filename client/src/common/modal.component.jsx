@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import { Modal, Button, Nav, NavItem, FormGroup, Col, Checkbox, Form, ControlLabel, FormControl, Grid, Row } from 'react-bootstrap';
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
+import validate from '../util/validator.js';
 import './modal.css';
 
+//setup before functions
+var typingTimer;                //timer identifier
+var doneTypingInterval = 500;  //time in ms (5 seconds)
 class MyLargeModal extends Component {
 
     constructor() {
@@ -12,8 +16,10 @@ class MyLargeModal extends Component {
         this.state = {
             action: "Login",
             activeKey: 1,
-            userId: "",
-            password: ""
+            userId: null,
+            password: null,
+            emailAddress: null,
+            isDisabled: true
         };
     }
 
@@ -21,6 +27,52 @@ class MyLargeModal extends Component {
         this.setState({
             activeKey: eventKey
         });
+    }
+
+    getValidationState(field) {
+        return this.state[field];
+    }
+
+    handleFormSubmit() {
+        if (this.state.userId === "success" && this.state.password === "success" && this.state.emailAddress === "success")
+        this.setState({isDisabled: false});
+    }
+
+    //on keyup, start the countdown
+    keyup(e) {
+        let eventId = e.target.id;
+        let eventVal = e.target.value;
+        let that = this;
+        clearTimeout(typingTimer);
+        if (e.target.value) {
+            typingTimer = setTimeout(() => {
+                if(eventId === "confirmPassword")
+                    that.setState({ [document.getElementById("password").id] : validate(eventId, eventVal, document.getElementById("password").value)});
+                else if (eventId === "emailAddress") {
+                    that.setState({ [eventId]: validate(eventId, eventVal) });
+                    that.handleFormSubmit();
+                }
+                else
+                    that.setState({[eventId]: validate(eventId, eventVal)});
+            }, doneTypingInterval);
+        }
+    }
+
+    createUser(e) {
+        const formData = Array.from(e.target.elements)
+            .filter(el => el.name)
+            .reduce((a, b) => ({ ...a, [b.name]: b.value }), {});
+        //https://long-drink.glitch.me/user
+        fetch('http://localhost:5000/user', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify(formData)
+        });
+
+        e.preventDefault();
     }
 
     render() {
@@ -38,7 +90,7 @@ class MyLargeModal extends Component {
                     </Nav>
                 </Modal.Header>
                 <Modal.Body>
-                    {this.state.activeKey === 1 ? <LoginForm/> : <SignUpForm/>}
+                    {this.state.activeKey === 1 ? <LoginForm /> : <SignUpForm isDisabled={this.state.isDisabled} getValidationState={this.getValidationState.bind(this)} validateForm={this.createUser} keyup={this.keyup.bind(this)}/>}
                 </Modal.Body>
                 <Modal.Footer>
                     <Grid fluid={true}>
@@ -96,13 +148,11 @@ const LoginForm = (props) => {
                 id="userId"
                 type="text"
                 placeholder="User ID"
-                onChange={this.handleChange}
             />
             <FormControl
                 id="password"
                 type="password"
                 placeholder="Password"
-                onChange={this.handleChange}
             />
             <Checkbox>
                 Remember Me
@@ -114,30 +164,54 @@ const LoginForm = (props) => {
 
 const SignUpForm = (props) => {
     return (
-        <Form>
-            <FormControl
-                id="formSignupLogin"
-                type="text"
-                placeholder="User ID"
-            />
-            <FormControl
-                id="formSignupPassword"
-                type="password"
-                placeholder="Password"
-            />
-            <FormControl
-                id="formSignupConfirmPassword"
-                type="password"
-                placeholder="Confirm Password"
-            />
-            <FormControl
-                id="formSignupEmail"
-                type="email"
-                placeholder="Email"
-            />
-            <FormControl.Feedback />
-            <Button type="submit">Create Account</Button>
-        </Form>
+        <div>
+            <Form onSubmit={props.validateForm}>
+                <FormGroup
+                    validationState={props.getValidationState("userId")}
+                >
+                    <FormControl
+                        id="userId"
+                        name="userId"
+                        type="text"
+                        placeholder="User ID"
+                        onKeyUp={props.keyup}
+                    />
+                    <FormControl.Feedback />
+                </FormGroup>
+                <FormGroup
+                    validationState={props.getValidationState("password")}
+                >
+                    <FormControl
+                        id="password"
+                        name="password"
+                        type="password"
+                        placeholder="Password"
+                    />
+                    <FormControl
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="Confirm Password"
+                        onKeyUp={props.keyup}
+                    />
+                    <FormControl.Feedback />
+                </FormGroup>
+                <FormGroup
+                    validationState={props.getValidationState("emailAddress")}
+                >
+                    <FormControl
+                        id="emailAddress"
+                        name="emailAddress"
+                        type="email"
+                        placeholder="Email"
+                        onKeyUp={props.keyup}
+                    />
+                </FormGroup>
+                <FormControl.Feedback />
+                <Button type="submit" 
+                disabled={props.isDisabled}
+                >Create Account</Button>
+            </Form>
+        </div>
     );
 }
 

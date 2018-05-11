@@ -1,9 +1,9 @@
 module.exports = {
 
-    username: 'root',
-    password: 'root',
-    database: 'fortnite',
-    host: 'localhost',
+    username: process.env.userId,
+    password: process.env.password,
+    database: process.env.database,
+    host: process.env.host,
     port: 3306,
     dialect: 'mysql'
 };

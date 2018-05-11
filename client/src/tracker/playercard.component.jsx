@@ -3,7 +3,6 @@ import { Panel, Col, Nav, NavItem, Badge, Row, Grid } from 'react-bootstrap';
 import './playercard.css';
 
 let styles = ["primary", "success", "info", "warning", "danger"];
-
 class Player extends Component {
 
     constructor(props) {
@@ -30,11 +29,10 @@ class Player extends Component {
     generateCard(player) {
         let style = styles[Math.floor(Math.random() * styles.length)];
         return (
-                    <Col lg={2} key={player.accountId}>
                 <Panel bsStyle={style}>
-                            <Panel.Heading>
+                    <Panel.Heading>
                         <Panel.Title componentClass="h3">
-                            {player.name}
+                            <div className="userId">{player.name}</div>
                             <Badge pullRight>
                                 <a href="https://fortnitetracker.com/article/23/trn-rating-you" target="_blank" rel="noopener noreferrer">?</a>
                             </Badge>
@@ -42,22 +40,21 @@ class Player extends Component {
                                 Rating: {player.stats.filter(item => item.season === this.state.activeSeasonKey).reverse()[this.state.activeModeKey].rating}
                             </Badge>                           
                         </Panel.Title>
-                            </Panel.Heading>
-                            <Panel.Body className="playerCardBody">
-                                <Nav bsStyle="pills" activeKey={this.state.activeSeasonKey} onSelect={k => this.handleSelect("season", k)}>
-                                        <NavItem key={1} eventKey={"current"} className="seasonSelect">Current</NavItem>
-                                        <NavItem key={2} eventKey={"lifetime"} className="seasonSelect">Lifetime</NavItem>
-                                </Nav>
+                    </Panel.Heading>
+                    <Panel.Body className="playerCardBody">
+                        <Nav bsStyle="pills" activeKey={this.state.activeSeasonKey} onSelect={k => this.handleSelect("season", k)}>
+                                <NavItem key={1} eventKey={"current"} className="seasonSelect">Current</NavItem>
+                                <NavItem key={2} eventKey={"lifetime"} className="seasonSelect">Lifetime</NavItem>
+                        </Nav>
                         <PlayerSeasonStats key={this.state.activeSeasonKey} {...player.stats} nav={this.handleSelect} style={style} activeSeasonKey={this.state.activeSeasonKey} activeModeKey={this.state.activeModeKey}/>
-                            </Panel.Body>
-                        </Panel>
-                    </Col>
+                    </Panel.Body>
+                </Panel>
         )
     }
 
     render() {
             return (
-                <Col>
+                <Col sm={6} md={3} lg={2} key={this.props.accountId}>
                     {this.generateCard(this.props.player)}
                 </Col>
             )
@@ -111,10 +108,10 @@ const Stat = (props) => {
     return(
         <Grid fluid={true}>
         <Row className="statRow">
-                <Col sm={6} key={props.label} className="statLabel">
+                <Col xs={6} key={props.label} className="statLabel">
                     <div className="statInfo">{props.label}</div>
             </Col>
-                <Col sm={6} key={props.value} className="statValue">
+                <Col xs={6} key={props.value} className="statValue">
                     <div className="statInfo">{props.value}</div>
             </Col>
         </Row>
