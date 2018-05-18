@@ -7,7 +7,7 @@ class App extends Component {
 
   constructor() {
     super();
-    // if (window.location.protocol !== "https:") window.location.protocol = "https:";
+    //if (window.location.protocol !== "https:") window.location.protocol = "https:";
   }
 
   render() {
