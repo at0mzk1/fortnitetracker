@@ -9,10 +9,14 @@
     "author": "Amir Martinez",
     "license": "ISC",
     "dependencies": {
+        "bcrypt-nodejs": "^0.0.3",
         "body-parser": "^1.18.2",
         "dotenv": "^5.0.1",
         "express": "^4.16.2",
+        "jsonwebtoken": "^8.2.1",
         "mysql2": "^1.5.2",
+        "passport": "^0.4.0",
+        "passport-local": "^1.0.0",
         "request": "^2.83.0",
         "request-promise": "^4.2.2",
         "sequelize": "^4.35.2"

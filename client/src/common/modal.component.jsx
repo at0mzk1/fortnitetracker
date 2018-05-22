@@ -19,7 +19,8 @@ class MyLargeModal extends Component {
             userId: null,
             password: null,
             emailAddress: null,
-            isDisabled: true
+            success: false,
+            err: null
         };
     }
 
@@ -62,15 +63,19 @@ class MyLargeModal extends Component {
         const formData = Array.from(e.target.elements)
             .filter(el => el.name)
             .reduce((a, b) => ({ ...a, [b.name]: b.value }), {});
+            console.log(formData);
         //https://long-drink.glitch.me/user
-        fetch('http://localhost:5000/user', {
+        fetch('http://localhost:5000/auth/signup', {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             method: 'POST',
             body: JSON.stringify(formData)
-        });
+        }).then((response) => response.json())
+            .then(response => {
+            console.log(response);
+            });
 
         e.preventDefault();
     }
@@ -145,7 +150,7 @@ const LoginForm = (props) => {
     return (
         <Form>
             <FormControl
-                id="userId"
+                id="userid"
                 type="text"
                 placeholder="User ID"
             />
@@ -170,8 +175,8 @@ const SignUpForm = (props) => {
                     validationState={props.getValidationState("userId")}
                 >
                     <FormControl
-                        id="userId"
-                        name="userId"
+                        id="userid"
+                        name="userid"
                         type="text"
                         placeholder="User ID"
                         onKeyUp={props.keyup}
@@ -199,8 +204,8 @@ const SignUpForm = (props) => {
                     validationState={props.getValidationState("emailAddress")}
                 >
                     <FormControl
-                        id="emailAddress"
-                        name="emailAddress"
+                        id="email"
+                        name="email"
                         type="email"
                         placeholder="Email"
                         onKeyUp={props.keyup}
