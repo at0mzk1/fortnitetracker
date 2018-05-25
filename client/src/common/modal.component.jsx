@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
-import { Container, Modal, ModalFooter, Input, Button, Fa, Row, Col } from 'mdbreact';
-import { Tabs, Typography, Checkbox } from '@material-ui/core'
+import { Container, Modal, ModalFooter, Fa, Row, Col } from 'mdbreact';
+import { Tabs, Typography, } from '@material-ui/core'
 import CustomTab from '../theme/CustomTab'
-import CustomFormControlLabel from '../theme/CustomFormControlLabel'
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
-import validate from '../util/validator.js';
+import SignUpForm from '../util/signup.component'
+import LoginForm from '../util/login.component'
 import './modal.css';
-
-//setup before functions
-var typingTimer;                //timer identifier
-var doneTypingInterval = 500;  //time in ms (5 seconds)
 
 function TabContainer({ children, dir }) {
     return (
@@ -25,15 +21,10 @@ class MyLargeModal extends Component {
     constructor() {
         super();
         this.render.bind(this);
-        this.createUser = this.createUser.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.state = {
             remember: false,
             value: 0,
-            userId: null,
-            password: null,
-            emailAddress: null,
-            success: false,
-            err: null,
             modal: false
         };
     }
@@ -42,61 +33,6 @@ class MyLargeModal extends Component {
         event.preventDefault();
         this.setState({ value });
     };
-
-    handleRemember = name => event => {
-        console.log(name, event.target.checked);
-        this.setState({ [name]: event.target.checked });
-    };
-
-    getValidationState(field) {
-        return this.state[field];
-    }
-
-    handleFormSubmit() {
-        if (this.state.userId === "success" && this.state.password === "success" && this.state.emailAddress === "success")
-        this.setState({isDisabled: false});
-    }
-
-    //on keyup, start the countdown
-    keyup(e) {
-        let eventId = e.target.id;
-        let eventVal = e.target.value;
-        let that = this;
-        clearTimeout(typingTimer);
-        if (e.target.value) {
-            typingTimer = setTimeout(() => {
-                if(eventId === "confirmPassword")
-                    that.setState({ [document.getElementById("password").id] : validate(eventId, eventVal, document.getElementById("password").value)});
-                else if (eventId === "emailAddress") {
-                    that.setState({ [eventId]: validate(eventId, eventVal) });
-                    that.handleFormSubmit();
-                }
-                else
-                    that.setState({[eventId]: validate(eventId, eventVal)});
-            }, doneTypingInterval);
-        }
-    }
-
-    createUser(e) {
-        const formData = Array.from(e.target.elements)
-            .filter(el => el.name)
-            .reduce((a, b) => ({ ...a, [b.name]: b.value }), {});
-            console.log(formData);
-        //https://long-drink.glitch.me/user
-        fetch('http://localhost:5000/auth/signup', {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            method: 'POST',
-            body: JSON.stringify(formData)
-        }).then((response) => response.json())
-            .then(response => {
-            console.log(response);
-            });
-
-        e.preventDefault();
-    }
 
     render() {
         return (
@@ -112,24 +48,18 @@ class MyLargeModal extends Component {
                         <CustomTab label="Log In" icon={<Fa icon="user" />}/>
                         <CustomTab label="Sign Up" icon={<Fa icon="user-plus" />}/>
                     </Tabs>
-                    {this.state.value === 0 && <TabContainer>
-                        <LoginForm handleRemember={this.handleRemember.bind(this)} remember={this.state.remember}/>
-                        </TabContainer>
-                    }
-                    {this.state.value === 1 && <TabContainer>
-                        <SignUpForm getValidationState={this.getValidationState.bind(this)} validateForm={this.createUser} keyup={this.keyup.bind(this)} />
-                        </TabContainer>
-                    }
+                    {this.state.value === 0 && <TabContainer><LoginForm /></TabContainer>}
+                    {this.state.value === 1 && <TabContainer><SignUpForm /></TabContainer>}
                     <ModalFooter>
                         <Container fluid>
                             <Row>
-                                <Col sm='12' className="formgroup-centered" >
-                                    <h6 className="formgroup-centered">OR</h6>
+                                <Col sm='12'>
+                                    <h6 className="text-center">OR</h6>
                                 </Col>
                             </Row>
                             <Row>
-                                <Col sm='12' className="formgroup-centered" >
-                                    <h5 className="formgroup-centered">Sign in with social account</h5>
+                                <Col sm='12'>
+                                    <h5 className="text-center">Sign in with social account</h5>
                                 </Col>
                             </Row>
                             <Row>
@@ -171,44 +101,6 @@ const responseGoogle = (response) => {
 
 const responseFacebook = (response) => {
     console.log(response);
-}
-
-const LoginForm = (props) => {
-    return (
-        <form>
-            <Input id="userid" label="User ID" icon="user" group type="email" validate error="wrong" success="right" />
-            <Input id="password" label="Password" icon="lock" group type="password" validate />
-            <CustomFormControlLabel
-                control={
-                    <Checkbox
-                        checked={props.remember}
-                        onChange={props.handleRemember("remember")}
-                        value="remember"
-                        color="primary"
-                        style={{color: "whitesmoke"}}
-                    />
-                }
-                label="Remember me"
-            />
-            <div className="text-right">
-                <Button type="submit">Login</Button>
-            </div>
-        </form>
-    );
-}
-
-const SignUpForm = (props) => {
-    return (
-        <form onSubmit={props.validateForm}>
-            <Input id="userid" label="User ID" icon="user" group type="email" validate error="wrong" success="right" />
-            <Input id="password" label="Password" icon="lock" group type="password" validate />
-            <Input id="confirmPassword" label="Confirm Password" icon="lock" group type="password" validate />
-            <Input id="email" label="Email" icon="envelope" group type="email" validate error="wrong" success="right" />
-            <div className="text-right">
-                <Button type="submit">Sign Up</Button>
-            </div>
-        </form>
-    );
 }
 
 export default MyLargeModal;

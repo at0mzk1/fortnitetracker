@@ -1,16 +1,26 @@
 let validationState = null;
 
-export default function validate(field, value, secondValue) {
-    var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (field === "userId" && (value.length < 6 || value.length > 10))
-        return "error";
-    if (field === "emailAddress" && !re.test(value))
-        return "error";
-    if (field === "confirmPassword" && !(value === secondValue))
-        return "error";
 
-    return null;
+export default function validate(e) {
+    const formData = Array.from(e.target.elements)
+        .filter(el => el.id)
+        .reduce((a, b) => ({ ...a, [b.id]: b.value }), {});
+        
+
 }
+
+
+// export default function validate(field, value, secondValue) {
+//     var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+//     if (field === "userId" && (value.length < 6 || value.length > 10))
+//         return "error";
+//     if (field === "emailAddress" && !re.test(value))
+//         return "error";
+//     if (field === "confirmPassword" && !(value === secondValue))
+//         return "error";
+
+//     return null;
+// }
 
 async function validateUserId(value) {
     console.log("userID: " + value);

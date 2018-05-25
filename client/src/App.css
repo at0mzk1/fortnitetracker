@@ -3,6 +3,10 @@
   color: whitesmoke;
 }
 
+.md-form .prefix ~ input, .md-form .prefix ~ textarea {
+  color: whitesmoke;
+}
+
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 80px;
