@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Panel, Col, Nav, NavItem, Badge, Row, Grid } from 'react-bootstrap';
+import { Container, Card, CardBody, CardTitle, Col, Row } from 'mdbreact';
+import { Tabs } from '@material-ui/core'
+import CustomTab from '../theme/CustomTab'
 import './playercard.css';
 
-let styles = ["primary", "success", "info", "warning", "danger"];
 class Player extends Component {
 
     constructor(props) {
@@ -27,34 +28,31 @@ class Player extends Component {
     }
 
     generateCard(player) {
-        let style = styles[Math.floor(Math.random() * styles.length)];
         return (
-                <Panel bsStyle={style}>
-                    <Panel.Heading>
-                        <Panel.Title componentClass="h3">
-                            <div className="userId">{player.name}</div>
-                            <Badge pullRight>
-                                <a href="https://fortnitetracker.com/article/23/trn-rating-you" target="_blank" rel="noopener noreferrer">?</a>
-                            </Badge>
-                            <Badge pullRight>
-                                Rating: {player.stats.filter(item => item.season === this.state.activeSeasonKey).reverse()[this.state.activeModeKey].rating}
-                            </Badge>                           
-                        </Panel.Title>
-                    </Panel.Heading>
-                    <Panel.Body className="playerCardBody">
-                        <Nav bsStyle="pills" activeKey={this.state.activeSeasonKey} onSelect={k => this.handleSelect("season", k)}>
-                                <NavItem key={1} eventKey={"current"} className="seasonSelect">Current</NavItem>
-                                <NavItem key={2} eventKey={"lifetime"} className="seasonSelect">Lifetime</NavItem>
-                        </Nav>
-                        <PlayerSeasonStats key={this.state.activeSeasonKey} {...player.stats} nav={this.handleSelect} style={style} activeSeasonKey={this.state.activeSeasonKey} activeModeKey={this.state.activeModeKey}/>
-                    </Panel.Body>
-                </Panel>
+            <Card>
+                <CardTitle className='playerCardTitle'>
+                    {player.name}
+                </CardTitle>
+                <CardBody style={{padding: 0}}>
+                    <Tabs
+                        value={this.state.activeSeasonKey}
+                        onChange={(k, value) => this.handleSelect("season", value)}
+                        indicatorColor="primary"
+                        textColor="primary"
+                        fullWidth
+                    >
+                        <CustomTab value="current" label="Current" />
+                        <CustomTab value="lifetime" label="Lifetime" />
+                    </Tabs>
+                    <PlayerSeasonStats key={this.state.activeSeasonKey} {...player.stats} nav={this.handleSelect} activeSeasonKey={this.state.activeSeasonKey} activeModeKey={this.state.activeModeKey} />
+                </CardBody>
+            </Card>
         )
     }
 
     render() {
             return (
-                <Col sm={6} md={3} lg={2} key={this.props.accountId}>
+                <Col sm="6" md="3" lg="4" key={this.props.accountId} style={{ padding: 15 }}>
                     {this.generateCard(this.props.player)}
                 </Col>
             )
@@ -67,16 +65,22 @@ const PlayerSeasonStats = (props) => {
 
     return (
         <div className="playerCardStatBody">
-            <Nav bsStyle="pills" activeKey={props.activeModeKey} onSelect={k => props.nav("mode", k)}>
+            <Tabs
+                value={props.activeModeKey}
+                onChange={(k, value) => props.nav("mode", value)}
+                indicatorColor="secondary"
+                textColor="secondary"
+                centered
+            >
                 {
-                    modeDetails.map((mode, i) => { 
+                    modeDetails.map((mode, i) => {
                     if (mode.season === props.activeSeasonKey) {
-                        return (<NavItem key={i} eventKey={i} className="modeLi">{mode.mode}</NavItem>)
+                        return (<CustomTab key={i} value={i} label={mode.mode} />)
                     }
                     return null;
                 } )
                 }
-            </Nav>
+            </Tabs>
             <PlayerStats key={props.activeModeKey} {...modeDetails[keys[props.activeModeKey]]}/>
         </div>);
 }
@@ -85,11 +89,17 @@ let organizeData = (keys2, props, season) => {
     let modeDetails = [];
     keys2.map((mode, i) => {
         if (props[mode].season === season) {
-            return (modeDetails.push(props[keys2[mode]]));
+            if (props[keys2[mode]].mode === 'solo') {
+                modeDetails[0] = props[keys2[mode]];
+            } else if (props[keys2[mode]].mode === 'duo') {
+                modeDetails[1] = props[keys2[mode]];
+            } else {
+                modeDetails[2] = props[keys2[mode]];
+            }
         }
         return null;
     })
-    return modeDetails.reverse();
+    return modeDetails;
 }
 
 const PlayerStats = (props) => {
@@ -106,16 +116,16 @@ const PlayerStats = (props) => {
 
 const Stat = (props) => {
     return(
-        <Grid fluid={true}>
-        <Row className="statRow">
-                <Col xs={6} key={props.label} className="statLabel">
-                    <div className="statInfo">{props.label}</div>
-            </Col>
-                <Col xs={6} key={props.value} className="statValue">
-                    <div className="statInfo">{props.value}</div>
-            </Col>
-        </Row>
-        </Grid>);
+        <Container>
+            <Row className="statRow">
+                    <Col xs="6" key={props.label} className="statLabel">
+                        <div className="statInfo">{props.label}</div>
+                </Col>
+                    <Col xs="6" key={props.value} className="statValue">
+                        <div className="statInfo">{props.value}</div>
+                </Col>
+            </Row>
+        </Container>);
 }
 
 export default Player;

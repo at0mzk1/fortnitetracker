@@ -1,48 +1,68 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Navbar, NavbarBrand, NavbarNav, NavbarToggler, Collapse, NavItem, NavLink } from 'mdbreact';
 import MyLargeModal from './modal.component';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 
 class Header extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            collapse: false,
+            isWideEnough: false,
             show: false,
-            activePage: 1
+            active: "Home"
         };
+        this.onClick = this.onClick.bind(this);
+        this.lgClose = this.lgClose.bind(this);
     }
 
-    handleSelect(selectedKey) {
+    handleMenuClick(menu) {
         this.setState({
-            activePage: selectedKey
-        })
+            active: menu,
+        });
+    }
+
+    onClick() {
+        this.setState({
+            collapse: !this.state.collapse,
+        });
+    }
+
+    lgClose() {
+        this.setState({
+            show: !this.state.show
+        });
     }
 
     render() {
-        let lgClose = () => this.setState({ show: false });
-
-        return(
-            <Navbar collapseOnSelect staticTop fluid className="navBar">
-                <Navbar.Header>
-                    <Navbar.Brand>
-                        Fortnite Friends Rankings <small>created by at0mz</small>
-                    </Navbar.Brand>
-                    <Navbar.Toggle />
-                </Navbar.Header>
-                <Navbar.Collapse className="navBarMenu">
-                    <Nav activeKey={this.state.activePage} onSelect={k => this.handleSelect(k)} className="menuItems">
-                        <NavItem eventKey={1} href="/">Home</NavItem>
-                        <NavItem eventKey={2} href="/tracker">Tracker</NavItem>
-                    </Nav>
-                    <Nav pullRight>
-                        <NavItem onClick={() => this.setState({ show: true })}>
-                            Login
-                </NavItem>
-                        <MyLargeModal show={this.state.show} onHide={lgClose} />
-                    </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-        )
+        return (
+            <div className="header">
+                <Navbar color="elegant-color" dark expand="lg" scrolling>
+                        <NavbarBrand href="/" tag="span">
+                            <strong>Fortnite Friends Rankings <small>created by at0mz</small></strong>
+                        </NavbarBrand>
+                    {!this.state.isWideEnough && <NavbarToggler onClick={() => this.onClick}/>}
+                        <Collapse isOpen={this.state.collapse} navbar>
+                            <NavbarNav left>
+                            <NavItem className={this.state.active === "Home" ? 'active' : ''}>
+                                <NavLink to="/" onClick={() => this.handleMenuClick("Home")}>Home</NavLink>
+                            </NavItem>
+                            <NavItem className={this.state.active === "Tracker" ? 'active' : ''}>
+                                <NavLink to="/tracker" onClick={() => this.handleMenuClick("Tracker")}>Tracker</NavLink>
+                            </NavItem>
+                            </NavbarNav>
+                            <NavbarNav right>
+                            <NavItem>
+                                    <NavLink to="#" onClick={() => this.setState({ show: true })}>Login</NavLink>
+                            </NavItem>
+                            </NavbarNav>
+                        </Collapse>
+                    </Navbar>
+                <MyLargeModal show={this.state.show} toggle={this.lgClose} />
+            </div>
+        );
     }
 }
 

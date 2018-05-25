@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Modal, Button, Nav, NavItem, FormGroup, Col, Checkbox, Form, ControlLabel, FormControl, Grid, Row } from 'react-bootstrap';
+import { Container, Modal, ModalFooter, Input, Button, Fa, Row, Col } from 'mdbreact';
+import { Tabs, Typography, Checkbox } from '@material-ui/core'
+import CustomTab from '../theme/CustomTab'
+import CustomFormControlLabel from '../theme/CustomFormControlLabel'
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
 import validate from '../util/validator.js';
@@ -8,27 +11,42 @@ import './modal.css';
 //setup before functions
 var typingTimer;                //timer identifier
 var doneTypingInterval = 500;  //time in ms (5 seconds)
+
+function TabContainer({ children, dir }) {
+    return (
+        <Typography component="div" dir={dir} style={{ padding: 8 * 3, color: "whitesmoke" }}>
+            {children}
+        </Typography>
+    );
+}
+
 class MyLargeModal extends Component {
 
     constructor() {
         super();
         this.render.bind(this);
+        this.createUser = this.createUser.bind(this);
         this.state = {
-            action: "Login",
-            activeKey: 1,
+            remember: false,
+            value: 0,
             userId: null,
             password: null,
             emailAddress: null,
             success: false,
-            err: null
+            err: null,
+            modal: false
         };
     }
 
-    handleSelect(eventKey) {
-        this.setState({
-            activeKey: eventKey
-        });
-    }
+    handleChange = (event, value) => {
+        event.preventDefault();
+        this.setState({ value });
+    };
+
+    handleRemember = name => event => {
+        console.log(name, event.target.checked);
+        this.setState({ [name]: event.target.checked });
+    };
 
     getValidationState(field) {
         return this.state[field];
@@ -82,56 +100,65 @@ class MyLargeModal extends Component {
 
     render() {
         return (
-            <Modal
-                show={this.props.show} 
-                onHide={this.props.onHide}
-                onSelect={this.props.onSelect}
-                bsSize="small"
-            >
-                <Modal.Header closeButton>
-                    <Nav bsStyle='pills' activeKey={this.state.activeKey} onSelect={this.handleSelect.bind(this)} className="login-nav-tab">
-                        <NavItem eventKey={1} title="Item"><span>Log In</span></NavItem>
-                        <NavItem eventKey={2} title="Item"><span>Sign Up</span></NavItem>
-                    </Nav>
-                </Modal.Header>
-                <Modal.Body>
-                    {this.state.activeKey === 1 ? <LoginForm /> : <SignUpForm isDisabled={this.state.isDisabled} getValidationState={this.getValidationState.bind(this)} validateForm={this.createUser} keyup={this.keyup.bind(this)}/>}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Grid fluid={true}>
-                        <Row>
-                            <FormGroup className="formgroup-centered">
-                        <ControlLabel>OR</ControlLabel>
-                        <FormControl.Static>Sign in with social account</FormControl.Static>
-                    </FormGroup>
-                        </Row>
-                        <Row>
-                            <Col sm={6} className="formgroup-centered" >
-                                <GoogleLogin
-                                    clientId="669816818644-kk374gvqb31g9sc0ehoqlgcg81452dbh.apps.googleusercontent.com"
-                                    buttonText="Google"
-                                    onSuccess={responseGoogle}
-                                    onFailure={responseGoogle}
-                                    className="google-login"
-                                />
+            <Container>
+                <Modal isOpen={this.props.show} toggle={this.props.toggle} centered>
+                    <Tabs
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                        indicatorColor="primary"
+                        textColor="primary"
+                        fullWidth
+                    >
+                        <CustomTab label="Log In" icon={<Fa icon="user" />}/>
+                        <CustomTab label="Sign Up" icon={<Fa icon="user-plus" />}/>
+                    </Tabs>
+                    {this.state.value === 0 && <TabContainer>
+                        <LoginForm handleRemember={this.handleRemember.bind(this)} remember={this.state.remember}/>
+                        </TabContainer>
+                    }
+                    {this.state.value === 1 && <TabContainer>
+                        <SignUpForm getValidationState={this.getValidationState.bind(this)} validateForm={this.createUser} keyup={this.keyup.bind(this)} />
+                        </TabContainer>
+                    }
+                    <ModalFooter>
+                        <Container fluid>
+                            <Row>
+                                <Col sm='12' className="formgroup-centered" >
+                                    <h6 className="formgroup-centered">OR</h6>
                                 </Col>
-                            <Col sm={6} className="formgroup-centered" >
-                                <FacebookLogin
-                                    appId="1088597931155576"
-                                    autoLoad={true}
-                                    fields="name,email,picture"
-                                    callback={responseFacebook}
-                                    textButton="Facebook"
-                                    cssClass="facebook-login"
-                                />
-                            </Col>
-                        </Row>
-                    </Grid>
-                </Modal.Footer>
-            </Modal>
+                            </Row>
+                            <Row>
+                                <Col sm='12' className="formgroup-centered" >
+                                    <h5 className="formgroup-centered">Sign in with social account</h5>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col sm='6' className="formgroup-centered" >
+                                    <GoogleLogin
+                                        clientId="669816818644-kk374gvqb31g9sc0ehoqlgcg81452dbh.apps.googleusercontent.com"
+                                        buttonText="Google"
+                                        onSuccess={responseGoogle}
+                                        onFailure={responseGoogle}
+                                        className="google-login"
+                                    />
+                                </Col>
+                                <Col sm='6' className="formgroup-centered" >
+                                    <FacebookLogin
+                                        appId="1088597931155576"
+                                        autoLoad={true}
+                                        fields="name,email,picture"
+                                        callback={responseFacebook}
+                                        textButton="Facebook"
+                                        cssClass="facebook-login"
+                                    />
+                                </Col>
+                            </Row>
+                        </Container>
+                    </ModalFooter>
+                </Modal>
+            </Container>
         );
     }
-
 }
 
 const responseGoogle = (response) => {
@@ -148,75 +175,39 @@ const responseFacebook = (response) => {
 
 const LoginForm = (props) => {
     return (
-        <Form>
-            <FormControl
-                id="userid"
-                type="text"
-                placeholder="User ID"
+        <form>
+            <Input id="userid" label="User ID" icon="user" group type="email" validate error="wrong" success="right" />
+            <Input id="password" label="Password" icon="lock" group type="password" validate />
+            <CustomFormControlLabel
+                control={
+                    <Checkbox
+                        checked={props.remember}
+                        onChange={props.handleRemember("remember")}
+                        value="remember"
+                        color="primary"
+                        style={{color: "whitesmoke"}}
+                    />
+                }
+                label="Remember me"
             />
-            <FormControl
-                id="password"
-                type="password"
-                placeholder="Password"
-            />
-            <Checkbox>
-                Remember Me
-            </Checkbox>
-            <Button type="submit">Login</Button>
-        </Form>
+            <div className="text-right">
+                <Button type="submit">Login</Button>
+            </div>
+        </form>
     );
 }
 
 const SignUpForm = (props) => {
     return (
-        <div>
-            <Form onSubmit={props.validateForm}>
-                <FormGroup
-                    validationState={props.getValidationState("userId")}
-                >
-                    <FormControl
-                        id="userid"
-                        name="userid"
-                        type="text"
-                        placeholder="User ID"
-                        onKeyUp={props.keyup}
-                    />
-                    <FormControl.Feedback />
-                </FormGroup>
-                <FormGroup
-                    validationState={props.getValidationState("password")}
-                >
-                    <FormControl
-                        id="password"
-                        name="password"
-                        type="password"
-                        placeholder="Password"
-                    />
-                    <FormControl
-                        id="confirmPassword"
-                        type="password"
-                        placeholder="Confirm Password"
-                        onKeyUp={props.keyup}
-                    />
-                    <FormControl.Feedback />
-                </FormGroup>
-                <FormGroup
-                    validationState={props.getValidationState("emailAddress")}
-                >
-                    <FormControl
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="Email"
-                        onKeyUp={props.keyup}
-                    />
-                </FormGroup>
-                <FormControl.Feedback />
-                <Button type="submit" 
-                disabled={props.isDisabled}
-                >Create Account</Button>
-            </Form>
-        </div>
+        <form onSubmit={props.validateForm}>
+            <Input id="userid" label="User ID" icon="user" group type="email" validate error="wrong" success="right" />
+            <Input id="password" label="Password" icon="lock" group type="password" validate />
+            <Input id="confirmPassword" label="Confirm Password" icon="lock" group type="password" validate />
+            <Input id="email" label="Email" icon="envelope" group type="email" validate error="wrong" success="right" />
+            <div className="text-right">
+                <Button type="submit">Sign Up</Button>
+            </div>
+        </form>
     );
 }
 

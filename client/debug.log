@@ -3,3 +3,8 @@
 [0309/064655.636:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
 [0309/064655.637:ERROR:exception_snapshot_win.cc(88)] thread ID 14152 not found in process
 [0309/064655.638:WARNING:crash_report_exception_handler.cc(62)] ProcessSnapshotWin::Initialize failed
+[0523/070007.438:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0523/070007.439:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0523/070007.439:ERROR:process_reader_win.cc(151)] SuspendThread: Access is denied. (0x5)
+[0523/070007.439:ERROR:exception_snapshot_win.cc(88)] thread ID 2616 not found in process
+[0523/070007.439:WARNING:crash_report_exception_handler.cc(62)] ProcessSnapshotWin::Initialize failed

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid } from 'react-bootstrap';
+import { Container, Row } from 'mdbreact';
 import PlayerCard from './playercard.component';
 
 class PlayerCards extends Component {
@@ -7,22 +7,7 @@ class PlayerCards extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeSeasonKey: 0,
-            activeModeKey: 0,
             playerCards: []
-        }
-    }
-
-    handleSelect = (selection, eventKey) => {
-        if(selection === "season"){
-            this.setState({
-                activeSeasonKey: eventKey
-            });
-        }
-        if (selection === "mode") {
-            this.setState({
-                activeModeKey: eventKey
-            });
         }
     }
 
@@ -43,9 +28,12 @@ class PlayerCards extends Component {
 
     render() {
         return (
-            <Grid fluid>
-                {this.state.playerCards}
-            </Grid>
+            <Container >
+                <h1>Your Dashboard</h1>
+                <Row>
+                    {this.state.playerCards}
+                </Row>
+            </Container>
         )
     }
 }
