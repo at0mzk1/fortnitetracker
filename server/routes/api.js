@@ -57,22 +57,22 @@ router.get('/players', function (req, res) {
     })
 });
 
-router.post('/user', function (req, res) {
-    console.log(req.body);
-    res.send("Response from API");
-});
-
 router.get('/user/:userId', function (req, res) {
-    console.log(req.body);
-    Models.user.findAndCountAll({
+    Models.user.count({
         where: {
             userid: req.params.userId
         }
-    }).then(user => {
-        if (user.count > 0)
-            res.send(user);
+    }).then(count => {
+        if (count > 0)
+            res.status(400).json({
+                success: false,
+                message: "User ID already exists."
+            });
         else
-            res.send({ "response": "User not found" });
+            res.status(200).json({
+                success: true,
+                message: 'User ID is valid.'
+            });
     })
 });
 

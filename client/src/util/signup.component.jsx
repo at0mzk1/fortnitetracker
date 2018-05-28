@@ -1,34 +1,34 @@
 import React, { Component } from 'react';
-import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { Button, Fa } from 'mdbreact';
+import { Input, Button } from 'mdbreact';
+import validate from './validator';
+import './signup.css';
 
 class SignUpForm extends Component {
 
     constructor() {
         super();
-        this.handleChange = this.handleChange.bind(this);
+        this.createUser = this.createUser.bind(this);
+        this.validField = this.validField.bind(this);
         this.state = {
             userId: '',
             password: '',
-            confirmPassword: '',
             email: '',
             err: ''
         };
     }
 
-    componentWillMount() {
-        // custom rule will have name 'isPasswordMatch'
-        ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
-            if (value !== this.state.password) {
-                return false;
-            }
-            return true;
-        });
+    validField(field) {
+        return this.state[field] === '' ? null : this.state[field] === "valid" ? "valid" : "invalid";
     }
 
     createUser(e) {
-        // validate(e);
+        e.preventDefault();
+        var errs = validate(e);
+        this.setState({
+            userId: errs.userId,
+            password: errs.password,
+            email: errs.email
+        });
         // //https://long-drink.glitch.me/user
         // fetch('http://localhost:5000/auth/signup', {
         //     headers: {
@@ -41,70 +41,19 @@ class SignUpForm extends Component {
         //     .then(response => {
         //     console.log(response);
         //     });
-
-        e.preventDefault();
-    }
-
-    handleChange(event) {
-        const b = event.target;
-        this.setState({ [b.name]: b.value });
     }
     
     render() {
         return (
-            <MuiThemeProvider>
-            <ValidatorForm
-                ref="form"
-                onSubmit={this.createUser}
-                onError={errors => console.log(errors)}
-            >
-                <TextValidator
-                    id="userid"
-                    floatingLabelText="User ID"
-                    onChange={this.handleChange}
-                    name="userid"
-                    value={this.state.userid}
-                    icon={<Fa icon="user" />}
-                    validators={['required']}
-                    errorMessages={['This field is required']}
-                />
-                <TextValidator
-                    id="password"
-                    floatingLabelText="Password"
-                    onChange={this.handleChange}
-                    name="password"
-                    value={this.state.password}
-                    type="password"
-                    icon={<Fa icon="lock" />}
-                    validators={['required']}
-                    errorMessages={['This field is required']}
-                />
-                <TextValidator
-                    id="confirmPassword"
-                    floatingLabelText="Confirm Password"
-                    onChange={this.handleChange}
-                    name="confirmPassword"
-                    value={this.state.confirmPassword}
-                    type="password"
-                    icon={<Fa icon="lock" />}
-                    validators={['isPasswordMatch', 'required']}
-                    errorMessages={['Password and Confirm Password must be equal', 'This field is required']}
-                />
-                <TextValidator
-                    id="email"
-                    floatingLabelText="Email"
-                    onChange={this.handleChange}
-                    name="email"
-                    value={this.state.email}
-                    icon={<Fa icon="envelope" />}
-                    validators={['required', 'isEmail']}
-                    errorMessages={['This field is required', 'Email is not valid']}
-                />
+            <form onSubmit={this.createUser}>
+                <Input id="userid" label="User ID" group icon="user" type="text" validate error={this.state.userId} required className={this.validField("userId")}/>
+                <Input id="password" label="Password" group icon="lock" type="password" validate required className={this.validField("password")}/>
+                <Input id="confirmPassword" label="Confirm Password" group icon="lock" type="password" validate error={this.state.password} required className={this.validField("password")}/>
+                <Input id="email" label="Email" group icon="envelope" type="email" validate error={this.state.email} required className={this.validField("email")}/>
                 <div className="text-right">
                     <Button type="submit">Sign Up</Button>
                 </div>
-            </ValidatorForm>
-                </MuiThemeProvider>
+            </form>
         );
     }
 }
