@@ -41,7 +41,7 @@ class Header extends Component {
                         <NavbarBrand href="/" tag="span">
                             <strong>Fortnite Friends Rankings <small>created by at0mz</small></strong>
                         </NavbarBrand>
-                    {!this.state.isWideEnough && <NavbarToggler onClick={() => this.onClick}/>}
+                    {!this.state.isWideEnough && <NavbarToggler onClick={this.onClick}/>}
                         <Collapse isOpen={this.state.collapse} navbar>
                             <NavbarNav left>
                             <NavItem className={this.state.active === "Home" ? 'active' : ''}>
