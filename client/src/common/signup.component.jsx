@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Input, Button } from 'mdbreact';
-import validate from './validator';
+import validate from '../util/validator';
 import './signup.css';
 
 class SignUpForm extends Component {
@@ -23,24 +23,33 @@ class SignUpForm extends Component {
 
     createUser(e) {
         e.preventDefault();
-        var errs = validate(e);
+        const formData = Array.from(e.target.elements)
+            .filter(el => el.id)
+            .reduce((a, b) => ({ ...a, [b.id]: b.value }), {});
+
+        var errs = validate(formData);
         this.setState({
-            userId: errs.userId,
             password: errs.password,
             email: errs.email
         });
-        // //https://long-drink.glitch.me/user
-        // fetch('http://localhost:5000/auth/signup', {
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json'
-        //     },
-        //     method: 'POST',
-        //     body: JSON.stringify(formData)
-        // }).then((response) => response.json())
-        //     .then(response => {
-        //     console.log(response);
-        //     });
+        fetch(process.env.REACT_APP_API_HOSTNAME + '/auth/signup', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify(formData)
+        }).then((response) => response.json())
+            .then(response => {
+                if(response.success) {
+                    // set a message
+                    localStorage.setItem('successMessage', response.message);
+                    this.props.redirect(new Event('redirect'), 0);
+                }
+                else {
+                    this.setState({userId: response.message});
+                }
+            });
     }
     
     render() {

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Navbar, NavbarBrand, NavbarNav, NavbarToggler, Collapse, NavItem, NavLink } from 'mdbreact';
 import MyLargeModal from './modal.component';
+import Auth from '../util/auth';
+import './header.css';
 
 class Header extends Component {
 
@@ -44,16 +46,17 @@ class Header extends Component {
                     {!this.state.isWideEnough && <NavbarToggler onClick={this.onClick}/>}
                         <Collapse isOpen={this.state.collapse} navbar>
                             <NavbarNav left>
-                            <NavItem className={this.state.active === "Home" ? 'active' : ''}>
+                            <NavItem className={window.location.pathname === "/" ? 'active' : ''}>
                                 <NavLink to="/" onClick={() => this.handleMenuClick("Home")}>Home</NavLink>
                             </NavItem>
-                            <NavItem className={this.state.active === "Tracker" ? 'active' : ''}>
+                            <NavItem className={window.location.pathname === "/tracker" ? 'active' : ''}>
                                 <NavLink to="/tracker" onClick={() => this.handleMenuClick("Tracker")}>Tracker</NavLink>
                             </NavItem>
                             </NavbarNav>
                             <NavbarNav right>
+                            {Auth.isUserAuthenticated() ? <NavItem className="loggedInUser">Welcome{", " + localStorage.getItem('loggedInUser') + " "}</NavItem> : null}
                             <NavItem>
-                                    <NavLink to="#" onClick={() => this.setState({ show: true })}>Login</NavLink>
+                                { Auth.isUserAuthenticated() ? <NavLink to="/logout" >Logout</NavLink> : <NavLink to="#" onClick={() => this.setState({ show: true })}>Login</NavLink>}
                             </NavItem>
                             </NavbarNav>
                         </Collapse>

@@ -4,8 +4,8 @@ import { Tabs, Typography, } from '@material-ui/core'
 import CustomTab from '../theme/CustomTab'
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
-import SignUpForm from '../util/signup.component'
-import LoginForm from '../util/login.component'
+import SignUpForm from './signup.component'
+import LoginForm from './login.component'
 import './modal.css';
 
 function TabContainer({ children, dir }) {
@@ -48,8 +48,8 @@ class MyLargeModal extends Component {
                         <CustomTab label="Log In" icon={<Fa icon="user" />}/>
                         <CustomTab label="Sign Up" icon={<Fa icon="user-plus" />}/>
                     </Tabs>
-                    {this.state.value === 0 && <TabContainer><LoginForm /></TabContainer>}
-                    {this.state.value === 1 && <TabContainer><SignUpForm /></TabContainer>}
+                    {this.state.value === 0 && <TabContainer><LoginForm toggle={this.props.toggle} /></TabContainer>}
+                    {this.state.value === 1 && <TabContainer><SignUpForm redirect={this.handleChange} /></TabContainer>}
                     <ModalFooter>
                         <Container fluid>
                             <Row>
