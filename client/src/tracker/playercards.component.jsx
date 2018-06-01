@@ -16,8 +16,12 @@ class PlayerCards extends Component {
     }
 
     getPlayers() {
-        fetch('https://long-drink.glitch.me/players')
-            .then((results) => results.json())
+        fetch(process.env.REACT_APP_API_HOSTNAME + '/api/players', {
+            headers: new Headers({
+                'Authorization': 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTUyNzcxODEzNH0.8GjbPb8Me3-sE-iBVPStvfhAcloY-hl8KGG_Fn6t6aM'
+            })
+        })
+            .then((results) =>  results.json())
             .then(results => {
                 let playerCards = results.map((player, i) => {
                     return (<PlayerCard key={i} player={player}/>)

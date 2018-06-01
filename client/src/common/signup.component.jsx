@@ -33,10 +33,10 @@ class SignUpForm extends Component {
             email: errs.email
         });
         fetch(process.env.REACT_APP_API_HOSTNAME + '/auth/signup', {
-            headers: {
+            headers: new Headers({
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-            },
+            }),
             method: 'POST',
             body: JSON.stringify(formData)
         }).then((response) => response.json())
@@ -53,6 +53,7 @@ class SignUpForm extends Component {
     }
     
     render() {
+        console.log("host: " + process.env.REACT_APP_API_HOSTNAME);
         return (
             <form onSubmit={this.createUser}>
                 <Input id="userid" label="User ID" group icon="user" type="text" validate error={this.state.userId} required className={this.validField("userId")}/>

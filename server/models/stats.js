@@ -43,9 +43,7 @@ module.exports = (sequelize, DataTypes) => {
         avg_match_time: {
             type: DataTypes.STRING
         }
-    }, {
-            timestamps: false,
-        });
+    });
 
     const stats = Stat.build();
     Stat.sync();

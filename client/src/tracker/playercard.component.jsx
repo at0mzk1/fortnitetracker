@@ -103,7 +103,7 @@ let organizeData = (keys2, props, season) => {
 }
 
 const PlayerStats = (props) => {
-    let filter = ["id", "player_id", "season", "mode", "avg_match_time", "rating"];
+    let filter = ["id", "player_id", "season", "mode", "avg_match_time", "rating", "createdAt", "updatedAt"];
     let keys = Object.keys(props).filter(item => !filter.includes(item));
     return (
         <div className="playerCardStats">

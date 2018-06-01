@@ -13,9 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         accountId: {
             type: DataTypes.STRING
         }
-    }, {
-            timestamps: false,
-        });
+    });
 
 
     Player.associate = function (models) {
