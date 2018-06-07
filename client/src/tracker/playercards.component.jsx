@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Container, Row } from 'mdbreact';
+import { Container, Row, Fa, Card, CardBody, Col } from 'mdbreact';
+import { Link } from 'react-router-dom'
 import PlayerCard from './playercard.component';
-
+import Auth from '../util/auth';
 class PlayerCards extends Component {
 
     constructor(props) {
@@ -16,14 +17,14 @@ class PlayerCards extends Component {
     }
 
     getPlayers() {
-        fetch(process.env.REACT_APP_API_HOSTNAME + '/api/players', {
-            headers: new Headers({
-                'Authorization': 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTUyNzcxODEzNH0.8GjbPb8Me3-sE-iBVPStvfhAcloY-hl8KGG_Fn6t6aM'
-            })
+        fetch(process.env.REACT_APP_API_HOSTNAME + '/api/profile/' + localStorage.getItem('loggedInUser'), {
+            headers: {
+                'Authorization': process.env.REACT_APP_API_TOKEN
+            }
         })
             .then((results) =>  results.json())
             .then(results => {
-                let playerCards = results.map((player, i) => {
+                let playerCards = results.players.map((player, i) => {
                     return (<PlayerCard key={i} player={player}/>)
                 })
                 this.setState({playerCards: playerCards})
@@ -33,9 +34,20 @@ class PlayerCards extends Component {
     render() {
         return (
             <Container >
-                <h1>Your Dashboard</h1>
+                <h1 className="text-align-center">Your Dashboard</h1>
                 <Row>
                     {this.state.playerCards}
+                    <Col sm="6" md="3" lg="4" key={1231214523} style={{ padding: 15 }}>
+                        
+                        <Link to={(Auth.isUserAuthenticated() ? { pathname: "/profile", hash: "friendsList" } : "#")} onClick={Auth.isUserAuthenticated() ? null : this.props.toggleModal}>
+                            <Card className="addFriendCard">
+                                <CardBody style={{ padding: 0 }} className="addFriendCardBody">
+                                    {this.state.playerCards.length > 0 ? "Add more friends!" : "Add a friend!"}
+                                <Fa icon="plus" className="addFriend" />
+                                </CardBody>
+                            </Card>
+                        </Link>
+                    </Col>
                 </Row>
             </Container>
         )

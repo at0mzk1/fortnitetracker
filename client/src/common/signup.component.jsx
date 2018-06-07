@@ -53,7 +53,6 @@ class SignUpForm extends Component {
     }
     
     render() {
-        console.log("host: " + process.env.REACT_APP_API_HOSTNAME);
         return (
             <form onSubmit={this.createUser}>
                 <Input id="userid" label="User ID" group icon="user" type="text" validate error={this.state.userId} required className={this.validField("userId")}/>

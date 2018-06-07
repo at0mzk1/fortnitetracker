@@ -1,6 +1,9 @@
 .App {
-  text-align: center;
   color: whitesmoke;
+}
+
+.text-align-center {
+  text-align: center;
 }
 
 .md-form .prefix ~ input, .md-form .prefix ~ textarea {

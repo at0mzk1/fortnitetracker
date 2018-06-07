@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         accountId: {
             type: DataTypes.STRING
+        },
+        platform: {
+            type: DataTypes.STRING
         }
     });
 
@@ -21,6 +24,8 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'player_id',
             sourceKey: 'id'
         })
+
+        models.player.belongsToMany(models.user, { as: 'users', through: 'dashboard', foreignKey: 'player_id', timestamps: false });
     }
 
     const players = Player.build();

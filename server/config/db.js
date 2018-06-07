@@ -9,5 +9,5 @@ module.exports = {
     port: 3306,
     dialect: 'mysql',
     operatorsAliases: Op, // use Sequelize.Op
-    jwtSecret: "739D3383D4B330F05E0ECB937DEABEA2FA5F9927DD0BFEDC411B15343EBE05CC"
+    jwtSecret: process.env.secret
 };

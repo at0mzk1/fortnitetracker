@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Navbar, NavbarBrand, NavbarNav, NavbarToggler, Collapse, NavItem, NavLink } from 'mdbreact';
-import MyLargeModal from './modal.component';
 import Auth from '../util/auth';
 import './header.css';
 
@@ -11,11 +10,10 @@ class Header extends Component {
         this.state = {
             collapse: false,
             isWideEnough: false,
-            show: false,
             active: "Home"
         };
         this.onClick = this.onClick.bind(this);
-        this.lgClose = this.lgClose.bind(this);
+        
     }
 
     handleMenuClick(menu) {
@@ -27,12 +25,6 @@ class Header extends Component {
     onClick() {
         this.setState({
             collapse: !this.state.collapse,
-        });
-    }
-
-    lgClose() {
-        this.setState({
-            show: !this.state.show
         });
     }
 
@@ -54,14 +46,14 @@ class Header extends Component {
                             </NavItem>
                             </NavbarNav>
                             <NavbarNav right>
-                            {Auth.isUserAuthenticated() ? <NavItem className="loggedInUser">Welcome{", " + localStorage.getItem('loggedInUser') + " "}</NavItem> : null}
+                            {Auth.isUserAuthenticated() ? <NavItem className="loggedInUser">Welcome{", "}<NavLink to="/profile" >{localStorage.getItem('loggedInUser')}</NavLink>{" "}</NavItem> : null}
                             <NavItem>
-                                { Auth.isUserAuthenticated() ? <NavLink to="/logout" >Logout</NavLink> : <NavLink to="#" onClick={() => this.setState({ show: true })}>Login</NavLink>}
+                                { Auth.isUserAuthenticated() ? <NavLink to="/logout" >Logout</NavLink> : <NavLink to="#" onClick={() => this.props.toggleModal()}>Login</NavLink>}
                             </NavItem>
                             </NavbarNav>
                         </Collapse>
                     </Navbar>
-                <MyLargeModal show={this.state.show} toggle={this.lgClose} />
+                
             </div>
         );
     }

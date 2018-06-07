@@ -50,7 +50,6 @@ class LoginForm extends Component {
                         });
                 }
                 if (response.success) {
-                    console.log(response);
                     Auth.authenticateUser(response.token);
                     localStorage.removeItem('successMessage');
                     localStorage.setItem('loggedInUser', response.user.name)

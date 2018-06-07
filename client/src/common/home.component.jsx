@@ -4,7 +4,7 @@ class Home extends Component {
 
     render() {
         return (
-                <div>Welcome to the tracker</div>
+            <div className="text-align-center">Welcome to the tracker</div>
         )
     }
 

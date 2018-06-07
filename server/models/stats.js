@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         mode: {
             type: DataTypes.STRING
         },
-        rating: {
+        score: {
             type: DataTypes.STRING
         },
         wins: {
@@ -40,8 +40,8 @@ module.exports = (sequelize, DataTypes) => {
         kills: {
             type: DataTypes.STRING
         },
-        avg_match_time: {
-            type: DataTypes.STRING
+        win_percentage: {
+            type: DataTypes.DECIMAL(15,2)
         }
     });
 

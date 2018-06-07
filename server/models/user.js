@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
                 }                
             }
         });
+    
+    User.associate = function (models) {
+        models.user.belongsToMany(models.player, { as: 'players', through: 'dashboard', foreignKey: 'user_id', timestamps: false });
+    }
 
     User.prototype.validPassword = function (password, callback) {
         bcrypt.compare(password, this.password, callback);

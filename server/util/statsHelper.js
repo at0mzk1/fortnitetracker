@@ -7,7 +7,7 @@ let users = ["Conciente", "jrxtepan", "rmena28", "hamlet_rannier", "SalamiRD", "
 
 var cron = setInterval(function () {
     syncPlayers();
-}, 1000 * 60 * 10);
+}, 1000 * 60 * 100);
 
 syncPlayers = () => {
     var index = 0;

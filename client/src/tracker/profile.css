@@ -1,0 +1,22 @@
+.card.addFriendCard {
+    height: 308.5px;
+    background: black;
+    border-style: dashed;
+    border-color: gray;
+    border-width: 2px;
+}
+
+.addFriendCardBody {
+    display: block;
+    text-align: center;
+    margin-top: 100px;
+}
+
+.addFriend {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -25px;
+    margin-left: -18.5px;
+    font-size: 50px;
+}

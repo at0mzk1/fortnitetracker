@@ -29,7 +29,7 @@ class Player extends Component {
 
     generateCard(player) {
         return (
-            <Card>
+            <Card className="text-align-center">
                 <CardTitle className='playerCardTitle'>
                     {player.name}
                 </CardTitle>

@@ -3,9 +3,13 @@ import PlayerCards from './playercards.component';
 
 class Tracker extends Component {
 
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         return (
-                <PlayerCards/>
+                <PlayerCards {...this.props} />
         )
     }
 
