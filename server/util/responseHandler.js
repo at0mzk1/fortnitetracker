@@ -1,6 +1,6 @@
 'use strict';
 
-let labels = ["kd", "matches", "score", "win%", "wins", "top10", "kills"];
+let labels = ["kd", "matches", "score", "win%", "wins", "top10", "kills", "win"];
 let top10 = 0;
 
 module.exports.cleanResponse = function(data) {
@@ -42,7 +42,10 @@ module.exports.cleanApiResponse = function (data, season) {
             if (labels.indexOf(key.replace(/[^a-zA-Z ]/g, "")) > -1) {
                 FortnitePlayer["season"] = season;
                 FortnitePlayer["mode"] = mode;
-                FortnitePlayer[key] = data.group[mode][key];
+                if(key.replace(/[^a-zA-Z ]/g, "") === "win") {
+                    FortnitePlayer["win_percentage"] = data.group[mode][key];
+                }
+                FortnitePlayer[key.replace(/[^a-zA-Z ]/g, "")] = data.group[mode][key];
             }
         }
         FortnitePlayer.top_10 = top10;
