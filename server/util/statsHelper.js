@@ -16,36 +16,36 @@ let fortniteAPI = new Fortnite(
 );
 
 let Players = [];
-let users = ["Conciente", "jrxtepan", "rmena28", "hamlet_rannier", "SalamiRD", "micky0512", "wilo_net", "javierskeemrd", "luisfrankrd", "Piimposh", "luisjoserd_", "LilRebelz", "littlerflow809", "LilJayO84"];
+let playerList = [];
 
 var cron = setInterval(function () {
+    playerList = [];
+    Models.player.findAll().then(players => {
+        updatePlayerList(players);
+    })
     syncPlayers();
-}, 1000 * 60 * 100);
+}, 1000 * 60 * 5);
+
+updatePlayerList = (players) => {
+    players.forEach(player => {
+        playerList.push({name: player.name, id: player.accountId, platform: player.platform, season: "lifetime", lastUpdated: player.updatedAt});
+        playerList.push({name: player.name, id: player.accountId, platform: player.platform, season: "weekly", lastUpdated: player.updatedAt});
+    })
+}
 
 syncPlayers = () => {
     var index = 0;
     sync = setInterval(function () {
-        Models.player.findOne({
-            where: {
-                name: users[index]
-            },
-            include: [{
-                model: Models.stat
-            }]
-        }).then(player => {
             var d = new Date();
-            var timeDiff = d - player.updatedAt;
-            console.log("Current Date: " + d);
-            console.log("Last updated: " + player.updatedAt);
+        var timeDiff = d - playerList[index].lastUpdated;
             if (timeDiff > 3600000) {
-                console.log(player.name + " needs to be updated..")
-                getPlayerInfo(player.name);
+                console.log(playerList[index].name + " needs to be updated..")
+                getPlayerInfo1(playerList[index].id, playerList[index].platform, playerList[index].season);
             }
             else {
-                console.log("No updated needed for " + player.name);
+                console.log("No updated needed for " + playerList[index].name);
             }
-        })
-        if (index >= users.length - 1) {
+        if (index >= playerList.length - 1) {
             index = 0;
             clearInterval(sync);
         }
@@ -109,27 +109,33 @@ getPlayerInfo = (user) => {
 //     syncPlayers1();
 // }, 1000 * 60 * 2);
 
-syncPlayers1 = () => {
-    var index = 0;
-    sync = setInterval(function () {
-        Models.player.findAll().then(players => {
-            ["weekly","lifetime"].forEach((season) => {
-                for(player in players) {
-                    var d = new Date();
-                    var timeDiff = d - players[player].updatedAt;
-
-                    if (timeDiff > 3600000) {
-                        console.log(players[player].name + " needs to be updated..")
-                        getPlayerInfo1(players[player].accountId, players[player].platform, season);
-                    }
-                    else {
-                        console.log("No updated needed for " + players[player].name);
-                    }
-                }
-            })
-        })
-    }, 5000);
-}
+// syncPlayers1 = () => {
+//     let apiThrottle = 1000;
+//     Models.player.findAll().then(players => {
+//         ["weekly","lifetime"].forEach((season) => {
+//             for(player in players) {
+//                 sync = setInterval(function () {
+//                     playerName = players[player].name;
+//                     playerId = players[player].accountId;
+//                     platform = players[player].platform;
+//                     var d = new Date();
+//                     var timeDiff = d - players[player].updatedAt;
+//                     if (timeDiff > 3600000) {
+//                         console.log(playerName + " needs to be updated..");
+//                         console.log("Passing player id: " + playerId);
+//                         getPlayerInfo1(playerId, platform, season);
+                        
+//                     }
+//                     else {
+//                         console.log("No updated needed for " + playerName + " in season: " + season);
+//                     }
+//                     console.log("throttling at: " + apiThrottle);
+//                 }, apiThrottle += 5000);
+//             }
+//         })
+//         clearInterval(sync);
+//     })
+// }
 
 getPlayerInfo1 = (accountId, platform, season) => {
     console.log("User to be updated: " + accountId);
@@ -138,8 +144,8 @@ getPlayerInfo1 = (accountId, platform, season) => {
         fortniteAPI
             .getStatsBRFromID(accountId, platform, season)
             .then(stats => {
-                console.log(stats);
-                PlayerStats = cleanResponse.cleanApiResponse(stats);
+                console.log("Response received, updating DB...");
+                PlayerStats = cleanResponse.cleanApiResponse(stats, season);
                 Models.player.upsert({
                     name: stats.info.username,
                     accountId: stats.info.accountId,
@@ -169,9 +175,7 @@ getPlayerInfo1 = (accountId, platform, season) => {
                 console.log(err);
             });
     });
-
     console.log("Player info updated: ", accountId);
 }
 
 // syncPlayers1();
-getPlayerInfo1("fb5660aa044a4b399680b657f2443301", "ps4", "weekly");
