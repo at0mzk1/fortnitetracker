@@ -40,7 +40,7 @@ module.exports.cleanApiResponse = function (data, season) {
         for (var key in data.group[mode]) {
             key.match(/top3|top5|top6|top10/) ? calcTop10(data.group[mode][key]) : null;
             if (labels.indexOf(key.replace(/[^a-zA-Z ]/g, "")) > -1) {
-                FortnitePlayer["season"] = season;
+                FortnitePlayer["season"] = season.match(/weekly/) ? "current" : season.match(/alltime/) ? "lifetime" : "invalid";
                 FortnitePlayer["mode"] = mode;
                 if(key.replace(/[^a-zA-Z ]/g, "") === "win") {
                     FortnitePlayer["win_percentage"] = data.group[mode][key];

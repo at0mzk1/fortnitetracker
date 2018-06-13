@@ -24,11 +24,11 @@ var cron = setInterval(function () {
         updatePlayerList(players);
     })
     syncPlayers();
-}, 1000 * 60 * 5);
+}, 1000 * 60 * 2);
 
 updatePlayerList = (players) => {
     players.forEach(player => {
-        playerList.push({name: player.name, id: player.accountId, platform: player.platform, season: "lifetime", lastUpdated: player.updatedAt});
+        playerList.push({name: player.name, id: player.accountId, platform: player.platform, season: "alltime", lastUpdated: player.updatedAt});
         playerList.push({name: player.name, id: player.accountId, platform: player.platform, season: "weekly", lastUpdated: player.updatedAt});
     })
 }
@@ -52,7 +52,7 @@ syncPlayers = () => {
         else {
             index++;
         }
-    }, 5000);
+    }, 2000);
 }
 
 getPlayerInfo = (user) => {
@@ -96,47 +96,6 @@ getPlayerInfo = (user) => {
     console.log("Player info updated: ", user);
 }
 
-//================================================================================================================================================================================================================================================
-//================================================================================================================================================================================================================================================
-//================================================================================================================================================================================================================================================
-//================================================================================================================================================================================================================================================
-//================================================================================================================================================================================================================================================
-//================================================================================================================================================================================================================================================
-//================================================================================================================================================================================================================================================
-//================================================================================================================================================================================================================================================
-
-// var cron = setInterval(function () {
-//     syncPlayers1();
-// }, 1000 * 60 * 2);
-
-// syncPlayers1 = () => {
-//     let apiThrottle = 1000;
-//     Models.player.findAll().then(players => {
-//         ["weekly","lifetime"].forEach((season) => {
-//             for(player in players) {
-//                 sync = setInterval(function () {
-//                     playerName = players[player].name;
-//                     playerId = players[player].accountId;
-//                     platform = players[player].platform;
-//                     var d = new Date();
-//                     var timeDiff = d - players[player].updatedAt;
-//                     if (timeDiff > 3600000) {
-//                         console.log(playerName + " needs to be updated..");
-//                         console.log("Passing player id: " + playerId);
-//                         getPlayerInfo1(playerId, platform, season);
-                        
-//                     }
-//                     else {
-//                         console.log("No updated needed for " + playerName + " in season: " + season);
-//                     }
-//                     console.log("throttling at: " + apiThrottle);
-//                 }, apiThrottle += 5000);
-//             }
-//         })
-//         clearInterval(sync);
-//     })
-// }
-
 getPlayerInfo1 = (accountId, platform, season) => {
     console.log("User to be updated: " + accountId);
     
@@ -174,8 +133,6 @@ getPlayerInfo1 = (accountId, platform, season) => {
             .catch(err => {
                 console.log(err);
             });
-    });
+    })
     console.log("Player info updated: ", accountId);
 }
-
-// syncPlayers1();
