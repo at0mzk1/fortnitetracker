@@ -28,7 +28,8 @@ const CustomChipInput = (props) => {
         onDelete,
         id,
         helperText,
-        placeholder
+        placeholder,
+        chipRenderer
     } = props;
 
     return (
@@ -46,6 +47,7 @@ const CustomChipInput = (props) => {
             id={id}
             helperText={helperText}
             placeholder={placeholder}
+            chipRenderer={chipRenderer}
             classes={{
                 root: classes.inputRoot,
                 input: classes.input,

@@ -1,5 +1,5 @@
 .card.addFriendCard {
-    height: 308.5px;
+    height: 363.5px;
     background: black;
     border-style: dashed;
     border-color: gray;
@@ -20,3 +20,13 @@
     margin-left: -18.5px;
     font-size: 50px;
 }
+
+.cc-selector input{
+    margin:0;padding:0;
+    -webkit-appearance:none;
+       -moz-appearance:none;
+            appearance:none;
+}
+.pc{background-image:url(http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/32/Devices-computer-icon.png);}
+.xb1{background-image:url(http://icons.iconarchive.com/icons/icons8/windows-8/32/Logos-Xbox-icon.png);}
+.ps4{background-image:url(http://icons.iconarchive.com/icons/martz90/circle-addon2/32/playstation-icon.png);}

@@ -24,7 +24,7 @@ var cron = setInterval(function () {
         updatePlayerList(players);
     })
     syncPlayers();
-}, 1000 * 60 * 15);
+}, 1000 * 60 * 1500);
 
 updatePlayerList = (players) => {
     players.forEach(player => {

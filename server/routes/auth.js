@@ -2,11 +2,12 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const Models = require('../models');
+const jwt = require('jsonwebtoken');
+const config = require('../config/db');
 
 router.post('/signup', (req, res, next) => {
     return passport.authenticate('signup', (err) => {
         if (err) {
-            console.log(err);
             return res.status(400).json({
                 success: false,
                 message: err.message
@@ -43,6 +44,23 @@ router.post('/login', (req, res, next) => {
             user: userData
         });
     })(req, res, next);
+});
+
+router.post('/verify', (req, res, next) => {
+    
+    jwt.verify(req.body.token, config.jwtSecret, function (err, results) {
+        if (err || results.uid !== req.headers["user-agent"].replace(/\D/g, "")) {
+            return res.status(400).json({
+                success: false,
+                message: err
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: 'Token valid'
+        });
+    });
 });
 
 module.exports = router;

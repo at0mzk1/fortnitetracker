@@ -3,6 +3,10 @@
     display: inline-block;
 }
 
+.h4 {
+    font-size: 2em;
+}
+
 .MuiTab-textColorPrimary-13 {
     color: whitesmoke;
 }
@@ -24,6 +28,7 @@
 
 .playerCardStatBody {
     padding-bottom: 10px;
+    position: relative;
 }
 
 .playerCardStats {
@@ -51,6 +56,21 @@
     width: 49%;
 }
 
+.noStatsCard {
+    position: relative;
+    min-height: 197.5px;
+    font-size: 30px;
+    color: gray;
+}
+
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.5em;
+}
+
 .playerCardTitle {
   background: linear-gradient(40deg,#292929,#363636);
   border-radius: 3px;
@@ -58,6 +78,7 @@
   color: white;
   height: 48px;
   padding: 0 30px;
+  font-size: 2em;
   box-shadow: 0 0px 0px 2px rgba(52, 62, 201, 0.3);
   display:flex;
   align-items: center;

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Container, Card, CardBody, CardTitle, Col, Row } from 'mdbreact';
+import { Container, Card, CardBody, CardTitle, Col, Row, Badge } from 'mdbreact';
 import { Tabs } from '@material-ui/core'
+import { ErrorOutline } from '@material-ui/icons';
 import CustomTab from '../theme/CustomTab'
 import './playercard.css';
 
@@ -31,7 +32,7 @@ class Player extends Component {
         return (
             <Card className="text-align-center">
                 <CardTitle className='playerCardTitle'>
-                    {player.name}
+                    {player.name} <Badge color="primary">{player.platform}</Badge>
                 </CardTitle>
                 <CardBody style={{padding: 0}}>
                     <Tabs
@@ -62,27 +63,33 @@ class Player extends Component {
 const PlayerSeasonStats = (props) => {
     let keys = Object.keys(props).slice(0, 6);
     let modeDetails = organizeData(keys, props, props.activeSeasonKey);
+    console.log(props);
 
-    return (
-        <div className="playerCardStatBody">
-            <Tabs
-                value={props.activeModeKey}
-                onChange={(k, value) => props.nav("mode", value)}
-                indicatorColor="secondary"
-                textColor="secondary"
-                centered
-            >
+        return (
+            <div className="playerCardStatBody">
+                <Tabs
+                    value={props.activeModeKey}
+                    onChange={(k, value) => props.nav("mode", value)}
+                    indicatorColor="secondary"
+                    textColor="secondary"
+                    centered
+                >
+                    <CustomTab key={0} value={0} label="Solo" />
+                    <CustomTab key={1} value={1} label="Duo" />
+                    <CustomTab key={2} value={2} label="Squad" />
+                </Tabs>
                 {
-                    modeDetails.map((mode, i) => {
-                    if (mode.season === props.activeSeasonKey) {
-                        return (<CustomTab key={i} value={i} label={mode.mode} />)
-                    }
-                    return null;
-                } )
+                     modeDetails[keys[props.activeModeKey]] ?
+                    <PlayerStats key={props.activeModeKey} {...modeDetails[keys[props.activeModeKey]]} /> :
+                        <div className="noStatsCard">
+                            <div className="centered"> 
+                                    <div className="noDataSvg"><ErrorOutline style={{ fontSize: "100px", padding: "5px" }} /></div>
+                                    <div style={{fontSize: 25}}>No data found</div>
+                            </div>
+                        </div>                     
                 }
-            </Tabs>
-            <PlayerStats key={props.activeModeKey} {...modeDetails[keys[props.activeModeKey]]}/>
-        </div>);
+                
+            </div>);
 }
 
 let organizeData = (keys2, props, season) => {

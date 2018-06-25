@@ -12,6 +12,7 @@ module.exports = new PassportLocalStrategy({
     session: false,
     passReqToCallback: true
 }, (req, userid, password, done) => {
+    
     const userData = {
         userid: userid,
         password: password.trim()
@@ -39,11 +40,15 @@ module.exports = new PassportLocalStrategy({
             }
 
             const payload = {
-                sub: user.userid
+                sub: user.userid,
+                uid: req.headers["user-agent"].replace(/\D/g, "")
             };
 
+            let expiresIn = req.body.remember ? "1y" : "1h";
+
             // create a token string
-            const token = jwt.sign(payload, config.jwtSecret);
+            const token = jwt.sign(payload, config.jwtSecret, { expiresIn: expiresIn});
+
             const data = {
                 name: user.userid
             };

@@ -14,21 +14,23 @@ let fortniteAPI = new Fortnite(
 );
 
 let platforms = ["pc", "ps4", "xb1"];
-let exists = [];
-function checkPlayer(player) {
 
+module.exports.checkPlayer = function (player, found) {
+    let notFound = 0;
     return fortniteAPI.login().then(() => {
                 platforms.forEach((platform) => {
             fortniteAPI
                 .checkPlayer(player, platform)
                 .then(stats => {
-                    console.log(stats);
-                    // exists.push({platform: platform, success: true});
-                }
-                )
+                    Object.defineProperty(stats, "name", Object.getOwnPropertyDescriptor(stats, "displayName"));
+                    delete stats["displayName"];
+                    Object.defineProperty(stats, "accountId", Object.getOwnPropertyDescriptor(stats, "id"));
+                    delete stats["id"];
+                    stats["platform"] = platform;
+                    return found(stats, notFound, null);
+                })
                 .catch(err => {
-                    console.log(err);
-                    // exists.push({ platform: platform, success: false });
+                    return found(null, notFound++, err);
                 })
         });
     });

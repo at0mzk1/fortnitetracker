@@ -28,6 +28,7 @@ class LoginForm extends Component {
         const formData = Array.from(e.target.elements)
             .filter(el => el.id)
             .reduce((a, b) => ({ ...a, [b.id]: b.value }), {});
+            formData["remember"] = this.state.remember;
 
         fetch(process.env.REACT_APP_API_HOSTNAME + '/auth/login', {
             headers: {
