@@ -19,7 +19,7 @@ module.exports = new PassportLocalStrategy({
     };
 
     // find a user by User ID
-    return Models.user.findOne({
+    return Models.user.scope('validatePassword').findOne({
         where: { userid: userData.userid }
     }).then(user => {
         if (user == null) {
@@ -28,7 +28,6 @@ module.exports = new PassportLocalStrategy({
 
             return done(error);
         }
-
         // check if a hashed user's password is equal to a value saved in the database
         return user.validPassword(userData.password, (passwordErr, isMatch) => {
             

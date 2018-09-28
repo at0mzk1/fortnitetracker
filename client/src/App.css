@@ -6,7 +6,7 @@
   text-align: center;
 }
 
-.md-form .prefix ~ input, .md-form .prefix ~ textarea {
+.md-form .prefix ~ input, .md-form .prefix ~ textarea, .md-form input, .form-control:focus {
   color: whitesmoke;
 }
 

@@ -2,6 +2,7 @@ var rp = require('request-promise');
 const Models = require('../models');
 var cleanResponse = require('./responseHandler.js');
 const Fortnite = require("fortnite-api");
+const Timer = require("./timerUtil");
 
 let fortniteAPI = new Fortnite(
     [
@@ -19,12 +20,12 @@ let Players = [];
 let playerList = [];
 
 var cron = setInterval(function () {
-    playerList = [];
-    Models.player.findAll().then(players => {
-        updatePlayerList(players);
-    })
-    syncPlayers();
-}, 1000 * 60 * 1500);
+            playerList = [];
+            Models.player.findAll().then(players => {
+                updatePlayerList(players);
+            })
+            syncPlayers();
+        }, process.env.intervalTimer);
 
 updatePlayerList = (players) => {
     players.forEach(player => {
@@ -71,7 +72,6 @@ getPlayerInfo = (user) => {
         response.json;
         Players = cleanResponse.cleanResponse(response);
         Players.map((player, i) => {
-            console.log(player);
             Models.player.upsert({
                 name: player.name,
                 accountId: player.accountId

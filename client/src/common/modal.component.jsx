@@ -18,8 +18,8 @@ function TabContainer({ children, dir }) {
 
 class MyLargeModal extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.render.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.state = {

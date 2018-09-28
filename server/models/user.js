@@ -16,13 +16,30 @@ module.exports = (sequelize, DataTypes) => {
         },
         email: {
             type: DataTypes.STRING
+        },
+        resetPasswordToken: {
+            type: DataTypes.STRING
+        },
+        resetPasswordExpires: {
+            type: DataTypes.DATE
         }
     }, {
             timestamps: false,
+            defaultScope: {
+                attributes: { exclude: ['password'] },
+            },
+            scopes: {
+                noAttributes: {
+                    attributes: { exclude: ['id', 'userid', 'password', 'email'] },
+                },
+                validatePassword: {
+                    attributes: { exclude: ['id', 'email', 'resetPasswordToken', 'resetPasswordExpires'] },
+                }
+            },
             hooks: {
-                beforeCreate: function (user, done) {
+                beforeSave: function (user, done) {
                     user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10), null);
-                }                
+                }
             }
         });
     
@@ -32,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
 
     User.prototype.validPassword = function (password, callback) {
         bcrypt.compare(password, this.password, callback);
-        // return bcrypt.compareSync(password, this.password, callback);
+        //return bcrypt.compareSync(password, this.password, callback);
     }
 
     const users = User.build();

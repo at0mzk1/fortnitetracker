@@ -10,10 +10,9 @@
   "repository": "https://at0mzk1@github.com/at0mzk1/fortnitetracker.git",
   "author": "at0mzk1 <airmax8@gmail.com>",
   "license": "MIT",
-  "devDependencies": {
-    "eslint-config-google": "^0.9.1"
-  },
   "dependencies": {
-    "concurrently": "^3.5.1"
+    "babel-eslint": "^8.2.5",
+    "concurrently": "^3.5.1",
+    "nodemailer": "^4.6.8"
   }
 }

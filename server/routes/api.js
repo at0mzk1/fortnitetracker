@@ -2,11 +2,11 @@ var express = require('express')
 var router = express.Router()
 const Models = require('../models');
 const Fortnite = require("fortnite-api");
-var rp = require('request-promise');
-var cleanResponse = require('../util/responseHandler.js');
+var responseHandler = require('../util/responseHandler.js');
 var playerUtil = require('../util/playerUtil.js')
 const jwt = require('jsonwebtoken');
 const config = require('../config/db');
+const timer = require('../util/timerUtil')
 
 let fortniteAPI = new Fortnite(
     [
@@ -40,7 +40,16 @@ router.get('/players', function (req, res) {
     })
 });
 
+router.get('/timer', function (req, res) {
+    let timeLeft = timer.getTimer();
+    res.status(200).json({
+        success: true,
+        timeLeft
+    });
+});
+
 router.get('/profile/:user', function (req, res) {
+    
     Models.user
         .find({
             include: [{
@@ -48,13 +57,33 @@ router.get('/profile/:user', function (req, res) {
                 as: 'players',
                 required: false,
                 attributes: ['id', 'name', 'platform'],
-                through: { attributes: [] },
+                through: {where: {primaryid: true}, attributes: []},
                 include: [{ model: Models.stat}]
             }],
             where: { userid: req.params.user },
-            attributes: ['id', 'userid', 'email'],
-        }).then(profile => {
-            res.send(profile);
+            attributes: ['id', 'userid', 'email']
+        }).then(primary => {
+            Models.user.scope('noAttributes')
+                .find({
+                    include: [{
+                        model: Models.player,
+                        as: 'players',
+                        required: false,
+                        attributes: ['id', 'name', 'platform'],
+                        through: { where: { primaryid: false }, attributes: [] },
+                        include: [{ model: Models.stat }]
+                    }],
+                    where: { userid: req.params.user }
+                }).then(friends => {
+                    res.status(200).json({
+                        success: true,
+                        id: primary.id,
+                        userid: primary.userid,
+                        email: primary.email,
+                        primary: responseHandler.formatPlayerResponse(primary.players, "primary"),
+                        friends: responseHandler.formatPlayerResponse(friends.players, "friends")
+                    });
+                })
         })
 });
 
@@ -128,7 +157,6 @@ router.get('/news', function(req, res) {
 })
 
 addRelationship = (token, player, res) => {
-    console.log(player);
     return jwt.verify(token, config.jwtSecret, function (err, decoded) {
         if (err) {
             return res.status(400).json({
@@ -161,7 +189,6 @@ addRelationship = (token, player, res) => {
 }
 
 removeRelationship = (token, player, res) => {
-    console.log(player);
     return jwt.verify(token, config.jwtSecret, function (err, decoded) {
         if (err) {
             return res.status(400).json({

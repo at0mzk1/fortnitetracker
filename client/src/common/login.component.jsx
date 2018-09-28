@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import CustomFormControlLabel from '../theme/CustomFormControlLabel'
 import { Checkbox } from '@material-ui/core'
 import { Input, Button } from 'mdbreact';
+import api from '../util/api';
 import Auth from '../util/auth';
 import './login.css';
 
@@ -30,34 +31,25 @@ class LoginForm extends Component {
             .reduce((a, b) => ({ ...a, [b.id]: b.value }), {});
             formData["remember"] = this.state.remember;
 
-        fetch(process.env.REACT_APP_API_HOSTNAME + '/auth/login', {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            method: 'POST',
-            body: JSON.stringify(formData)
-        }).then((response) => response.json())
-            .then(response => {
-                if (response.success === false) {
-                    response.message === "Incorrect User ID" ? 
-                        this.setState({
-                            userId: response.message
-                        })
+        api.post('/auth/login', null, formData, function (response) {
+            if (response.success === false) {
+                response.message === "Incorrect User ID" ?
+                    this.setState({
+                        userId: response.message
+                    })
                     :
-                        this.setState({
-                            userId: '',
-                            password: response.message
-                        });
-                }
-                if (response.success) {
-                    Auth.authenticateUser(response.token);
-                    localStorage.removeItem('successMessage');
-                    localStorage.setItem('loggedInUser', response.user.name)
-                    this.props.toggle();
-                }
-                
-            });
+                    this.setState({
+                        userId: '',
+                        password: response.message
+                    });
+            }
+            if (response.success) {
+                Auth.authenticateUser(response.token);
+                localStorage.removeItem('successMessage');
+                localStorage.setItem('loggedInUser', response.user.name)
+                this.props.toggle();
+            }
+        });
     }
 
     validField(field) {

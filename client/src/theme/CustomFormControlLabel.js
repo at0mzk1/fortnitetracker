@@ -7,7 +7,7 @@ const styles = theme => ({
         color: "whitesmoke"
     }
 });
-
+// eslint-disable-next-line
 const CustomFormControlLabel = (props) => {
     const {control,
         classes,

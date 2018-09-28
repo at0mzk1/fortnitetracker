@@ -3,10 +3,14 @@ import React from 'react';
 import ChipInput from 'material-ui-chip-input'
 
 const styles = {
+    root: {
+        paddingTop: 30,
+        paddingBottom: 30
+    },
     label: {
         color: "whitesmoke",
         fontWeight: 300,
-        fontSize: "2.5rem",
+        fontSize: "1.5em",
         display: "contents"
     },
     input: {
@@ -18,7 +22,7 @@ const styles = {
         color: "whitesmoke"
     }
 }
-
+// eslint-disable-next-line
 const CustomChipInput = (props) => {
     const { 
         classes,

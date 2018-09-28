@@ -55,6 +55,93 @@ module.exports.cleanApiResponse = function (data, season) {
     return FortnitePlayerStats;
 }
 
+module.exports.formatPlayerResponse = function(players, type) {
+    if(type === "friends") {
+        return formatFriendStats(players);
+    }
+    else
+        return formatPrimaryStats(players);
+}
+
 let calcTop10 = (amount) => {
     top10 += parseInt(amount);
+}
+
+let formatFriendStats = (players) => {
+    let playerStats = [];
+
+    for (var playerStat in players) {
+        playerStats[playerStat] = {};
+        playerStats[playerStat].id = players[playerStat].id;
+        playerStats[playerStat].player_id = players[playerStat].name;
+        playerStats[playerStat].platform = players[playerStat].platform;
+        playerStats[playerStat].stats = {};
+        let seasonStats = {};
+
+        for (var seasonStat in players[playerStat].stats) {
+            let playerSeasonStats = players[playerStat].stats[seasonStat]
+            let season = playerSeasonStats.season;
+            let mode = playerSeasonStats.mode;
+            let modeStats = {};
+            modeStats[mode] = {};
+            modeStats[mode].score = playerSeasonStats.score;
+            modeStats[mode].wins = playerSeasonStats.wins;
+            modeStats[mode].top10 = playerSeasonStats.top10;
+            modeStats[mode].kd = playerSeasonStats.kd;
+            modeStats[mode].matches = playerSeasonStats.matches;
+            modeStats[mode].kills = playerSeasonStats.kills;
+            modeStats[mode].win_percentage = playerSeasonStats.win_percentage;
+
+            if (seasonStats[season] == null) {
+                seasonStats[season] = {};
+                seasonStats[season][mode] = modeStats[mode];
+            }
+            else
+                seasonStats[season][mode] = modeStats[mode];
+        }
+        playerStats[playerStat].stats = seasonStats;
+    }
+
+    return playerStats;
+}
+
+let formatPrimaryStats = (players) => {
+    let playerStats = [];
+
+    for (var playerStat in players) {
+        playerStats[playerStat] = {};
+        playerStats[playerStat].id = players[playerStat].id;
+        playerStats[playerStat].player_id = players[playerStat].name;
+        playerStats[playerStat].platform = players[playerStat].platform;
+        playerStats[playerStat].stats = {};
+        let seasonStats = {};
+
+        for (var seasonStat in players[playerStat].stats) {
+            let playerSeasonStats = players[playerStat].stats[seasonStat]
+            let season = playerSeasonStats.season;
+            let mode = playerSeasonStats.mode;
+            let modeStats = {};
+            // console.log(Object.keys(JSON.parse(JSON.stringify(playerSeasonStats))).splice(4));
+            modeStats[mode] = [];
+            modeStats[mode].push(playerSeasonStats.score);
+            modeStats[mode].push(playerSeasonStats.wins);
+            modeStats[mode].push(playerSeasonStats.top10);
+            modeStats[mode].push(playerSeasonStats.kd);
+            modeStats[mode].push(playerSeasonStats.matches);
+            modeStats[mode].push(playerSeasonStats.kills);
+            modeStats[mode].push(playerSeasonStats.win_percentage);
+
+            if (seasonStats[season] == null) {
+                seasonStats.labels = Object.keys(JSON.parse(JSON.stringify(playerSeasonStats))).splice(4);
+                seasonStats.labels.splice(-1);
+                seasonStats.labels.splice(-1);
+                seasonStats[season] = {};
+                seasonStats[season][mode] = modeStats[mode];
+            }
+            else
+                seasonStats[season][mode] = modeStats[mode];
+        }
+        playerStats[playerStat].stats = seasonStats;
+    }
+    return playerStats;
 }

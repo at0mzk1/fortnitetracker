@@ -1,5 +1,4 @@
 const Fortnite = require("fortnite-api");
-var rp = require('request-promise');
 
 let fortniteAPI = new Fortnite(
     [

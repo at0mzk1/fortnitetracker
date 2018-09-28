@@ -1,19 +1,16 @@
 import React, { Component } from 'react';
 import { Container, Row, Input, Button } from 'mdbreact';
-import CustomChipInput from '../theme/CustomChipInput'
+import CustomChipInput from '../theme/CustomChipInput';
+import CustomFormControlLabel from '../theme/CustomFormControlLabel';
 import PlayerCard from './playercard.component';
 import api from '../util/api';
 import './profile.css';
-import { green } from '@material-ui/core/colors'
-import Avatar from '@material-ui/core/Avatar'
-import Chip from '@material-ui/core/Chip'
+import Avatar from '@material-ui/core/Avatar';
+import Chip from '@material-ui/core/Chip';
+import { FormControl, FormLabel, RadioGroup, Radio } from '@material-ui/core/';
+import {THEME} from '../theme/theme';
 
 let players = [];
-let icon = {
-    ps4: "http://icons.iconarchive.com/icons/martz90/circle-addon2/32/playstation-icon.png",
-    pc: "https://www.shareicon.net/download/32x32/2017/03/14/881205_server_512x512.png",
-    xb1: "http://icons.iconarchive.com/icons/icons8/windows-8/32/Logos-Xbox-icon.png"
-}
 
 class Profile extends Component {
 
@@ -28,7 +25,9 @@ class Profile extends Component {
             email: '',
             players: [],
             playerCards: [],
-            platform: "ps4"
+            platform: "ps4",
+            sameId: "Yes",
+            fortniteId: ''
         }
     }
 
@@ -39,7 +38,7 @@ class Profile extends Component {
     handleDelete(player) {
         let that = this;
 
-        api('/api/removePlayer/', player, function (results) {
+        api.get('/api/removePlayer/', player, function (results) {
             let removedPlayer = {name: results.player.name, platform: results.player.platform};
 
             if (results.success) {
@@ -55,7 +54,7 @@ class Profile extends Component {
     handleAdd(player) {
         let that = this;
 
-        api('/api/checkPlayer/', player, function (results) {
+        api.get('/api/checkPlayer/', player, function (results) {
             if(results.success) {
                 that.setState({
                     players: [...that.state.players, {name: results.player.name, platform: results.player.platform}]
@@ -106,8 +105,16 @@ class Profile extends Component {
         //     });
     }
 
+    handleSameId = event => {
+        this.setState({ sameId: event.target.value });
+    };
+
     getPlatformIcon(platform) {
-        return icon[platform[0].platform];
+        return THEME.PLATFORM[platform[0].platform].icon;
+    }
+
+    getPlatformColor(platform) {
+        return THEME.PLATFORM[platform[0].platform].color;
     }
 
     addFriends(e) {
@@ -122,10 +129,10 @@ class Profile extends Component {
     getProfile() {
         players = [];
         let that = this;
-        api('/api/profile/', localStorage.getItem('loggedInUser'), function (results) {
-
-            let playerCards = results.players.map((player, i) => {
-                players.push({name: player.name, platform: player.platform});
+        api.get('/api/profile/', localStorage.getItem('loggedInUser'), function (results) {
+            console.log(results);
+            let playerCards = results.friends.map((player, i) => {
+                players.push({name: player.player_id, platform: player.platform});
                 return (<PlayerCard key={i+1} player={player} />)
             })
             that.setState({ playerCards: playerCards, userId: results.userid, email: results.email, players: players })
@@ -140,6 +147,20 @@ class Profile extends Component {
                     {localStorage.getItem('successMessage') && <p className="success-message">{localStorage.getItem('successMessage')}</p>}
                     <Input id="userid" label="User ID" value={this.state.userId} group icon="user" type="text" validate required />
                     <Input id="email" label="Email" value={this.state.email} group icon="envelope" type="email" validate required />
+                    <FormControl component="fieldset" required >
+                        <FormLabel component="label" style={{ color: 'inherit' }}>Is this your Fortnite ID?</FormLabel>
+                        <RadioGroup 
+                            value={this.state.sameId}
+                            onChange={this.handleSameId}
+                            style={{ display: 'inline-block' }}
+                        >
+                            <CustomFormControlLabel value="Yes" label="Yes" control={<Radio style={{color: 'inherit'}} />} />
+                            <CustomFormControlLabel value="No" label="No" control={<Radio style={{ color: 'inherit' }} />} />
+                        </RadioGroup>
+                    </FormControl>
+                    <div style={this.state.sameId === "Yes" ? { display: "none" } : {}}>
+                        <Input id="fortniteid" label="Fortnite ID" group value={this.state.fortniteId} type="text" validate required />
+                    </div>
                     <div className="text-right">
                         <Button type="submit">Submit</Button>
                     </div>
@@ -153,7 +174,7 @@ class Profile extends Component {
                         chipRenderer={({ value, isFocused, isDisabled, handleClick, handleDelete, defaultStyle }, key) => (
                             <Chip
                                 key={key}
-                                style={{ ...defaultStyle, pointerEvents: isDisabled ? 'none' : undefined, backgroundColor: isFocused ? green[800] : green[300] }}
+                                style={{ ...defaultStyle, pointerEvents: isDisabled ? 'none' : undefined, color: "inherit", backgroundColor: this.getPlatformColor(this.state.players.filter(player => player.name === value)) }}
                                 onClick={handleClick}
                                 onDelete={handleDelete}
                                 label={value}
