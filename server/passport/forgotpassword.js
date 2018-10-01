@@ -6,14 +6,13 @@ const crypto = require('crypto');
  * Return the Passport Local Strategy object.
  */
 module.exports = new PassportLocalStrategy({
-    usernameField: 'userid',
+    usernameField: 'email',
     passwordField: 'email',
     session: false,
     passReqToCallback: true
 }, (req, userid, email, done) => {
     
     const userData = {
-        userid: userid,
         email: email
     };
 

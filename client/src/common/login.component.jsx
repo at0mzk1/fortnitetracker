@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import CustomFormControlLabel from '../theme/CustomFormControlLabel'
+import { Link } from "react-router-dom";
 import { Checkbox } from '@material-ui/core'
 import { Input, Button } from 'mdbreact';
 import api from '../util/api';
@@ -25,29 +26,29 @@ class LoginForm extends Component {
     };
 
     handleLogin(e) {
+        let that = this;
         e.preventDefault();
         const formData = Array.from(e.target.elements)
             .filter(el => el.id)
             .reduce((a, b) => ({ ...a, [b.id]: b.value }), {});
             formData["remember"] = this.state.remember;
-
         api.post('/auth/login', null, formData, function (response) {
             if (response.success === false) {
                 response.message === "Incorrect User ID" ?
-                    this.setState({
+                    that.setState({
                         userId: response.message
                     })
                     :
-                    this.setState({
+                    that.setState({
                         userId: '',
                         password: response.message
                     });
             }
-            if (response.success) {
+            if (response.success === true) {
                 Auth.authenticateUser(response.token);
                 localStorage.removeItem('successMessage');
                 localStorage.setItem('loggedInUser', response.user.name)
-                this.props.toggle();
+                that.props.toggle();
             }
         });
     }
@@ -62,6 +63,10 @@ class LoginForm extends Component {
                 {localStorage.getItem('successMessage') && <p className="success-message">{localStorage.getItem('successMessage')}</p>}
                 <Input id="userid" label="User ID" group icon="user" type="text" validate error={this.state.userId} required className={this.validField("userId")} />
                 <Input id="password" label="Password" group icon="lock" type="password" validate error={this.state.password} required className={this.validField("password")} />
+                <div className="text-right">
+                    <Link to="/forgot/" onClick={this.props.toggle}>Forgot Password?</Link>
+                </div>
+                
                 <CustomFormControlLabel
                     control={
                         <Checkbox

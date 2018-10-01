@@ -3,7 +3,7 @@ import Auth from './auth';
 export default {
     
     get(endpoint, parameter, done) {
-        fetch(process.env.REACT_APP_API_HOSTNAME + endpoint + parameter, {
+        fetch([process.env.REACT_APP_API_HOSTNAME, endpoint, parameter].join(''), {
             headers: {
                 'Authorization': getAuth()
             }

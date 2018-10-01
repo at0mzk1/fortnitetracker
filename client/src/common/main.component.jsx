@@ -13,7 +13,8 @@ const Main = (props) => (
         <Route exact path='/tracker' render={() => <Tracker {...props} />} />
         <Route exact path='/profile' component={Profile} />
         <Route exact path='/logout' render={() => { Auth.deauthenticateUser(); localStorage.removeItem('loggedInUser'); return(<Redirect to="/"/>)}} />
-        <Route exact path='/reset' component={PasswordReset} />
+        <Route exact path='/forgot' render={(props) => <PasswordReset {...props} action="forgot" />} />
+        <Route exact path='/reset/:token' render={(props) => <PasswordReset {...props} action="reset" />} />
     </Switch>
 )
 

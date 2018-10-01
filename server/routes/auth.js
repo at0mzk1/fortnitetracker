@@ -7,7 +7,6 @@ const config = require('../config/db');
 const nodemailer = require('nodemailer');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
-const rp = require('request-promise');
 
 router.post('/signup', (req, res, next) => {
     return passport.authenticate('signup', (err) => {
@@ -89,7 +88,7 @@ router.post('/forgot', function (req, res, next) {
                 subject: 'at0mzGaming Password Reset',
                 text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
                     'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-                    'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+                    req.headers.origin + '/reset/' + token + '\n\n' +
                     'If you did not request this, please ignore this email and your password will remain unchanged.\n'
             };
             smtpTransport.sendMail(mailOptions, function (err) {
@@ -151,7 +150,7 @@ router.post('/reset/:token', function (req, res) {
             user.save().then(user => {
                 return res.json({
                     success: true,
-                    message: 'Token valid'
+                    message: 'Your password has been changed successfully. Please log in with your new credentials.'
                 });
             }).catch(function (err) {
                 if (err) {
