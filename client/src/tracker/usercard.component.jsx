@@ -38,12 +38,12 @@ class User extends Component {
     }
 
     generateCard(player) {
-        console.log(player);
         let userInfo = (<h5>{player.player_id}
             <FormControl >
                 <InputLabel htmlFor="mode-native" style={{ color: "whitesmoke" }}>Mode</InputLabel>
                 <Select
                     value={this.state.activeModeKey}
+                    defaultValue={this.state.activeModeKey}
                     onChange={this.handleSelect}
                     inputProps={{
                         name: 'activeModeKey',

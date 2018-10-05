@@ -46,30 +46,40 @@ class Tracker extends Component {
     }
 
     render() {
-        return (
-            <Container >
+        if(Auth.isUserAuthenticated()) {
+            return (
+                <Container >
+                    <h1 className="text-align-center">Your Dashboard</h1>
+                    <Row>
+                        <Timer key={this.state.key} update={this.updateTimerKey} />
+                    </Row>
+                    <Row>
+                        {this.state.userCard}
+                    </Row>
+                    <Row>
+                        {this.state.playerCards}
+                        <Col sm="6" md="3" lg="4" key={1231214523} style={{ padding: 15 }}>
+                            <Link to={(Auth.isUserAuthenticated() ? { pathname: "/profile", hash: "friendsList" } : "#")} onClick={Auth.isUserAuthenticated() ? null : this.props.toggleModal}>
+                                <Card className="addFriendCard">
+                                    <CardBody style={{ padding: 0 }} className="addFriendCardBody">
+                                        {this.state.playerCards.length > 0 ? "Add more friends!" : "Add a friend!"}
+                                        <Fa icon="plus" className="addFriend" />
+                                    </CardBody>
+                                </Card>
+                            </Link>
+                        </Col>
+                    </Row>
+                </Container>
+            )
+        }
+        else {
+            return (<Container >
                 <h1 className="text-align-center">Your Dashboard</h1>
                 <Row>
-                    <Timer key={this.state.key} update={this.updateTimerKey}/>
+                    <Link to="#" onClick={this.props.toggleModal}>Please log in to see your dashboard.</Link>
                 </Row>
-                <Row>
-                    {this.state.userCard}
-                </Row>
-                <Row>
-                    {this.state.playerCards}
-                    <Col sm="6" md="3" lg="4" key={1231214523} style={{ padding: 15 }}>
-                        <Link to={(Auth.isUserAuthenticated() ? { pathname: "/profile", hash: "friendsList" } : "#")} onClick={Auth.isUserAuthenticated() ? null : this.props.toggleModal}>
-                            <Card className="addFriendCard">
-                                <CardBody style={{ padding: 0 }} className="addFriendCardBody">
-                                    {this.state.playerCards.length > 0 ? "Add more friends!" : "Add a friend!"}
-                                    <Fa icon="plus" className="addFriend" />
-                                </CardBody>
-                            </Card>
-                        </Link>
-                    </Col>
-                </Row>
-            </Container>
-        )
+            </Container>)
+        }
     }
 }
 

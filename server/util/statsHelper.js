@@ -77,7 +77,7 @@ getPlayerInfo = (user) => {
                 accountId: player.accountId
             }).then(() => {
                 Models.player.findOne({ where: { name: player.name } }).then(record => {
-                    Models.stat.upsert({
+                    Models.stats.upsert({
                         player_id: record.id,
                         season: player.season,
                         mode: player.mode,
@@ -115,7 +115,7 @@ getPlayerInfo1 = (accountId, platform, season) => {
 
                 PlayerStats.map((player, i) => {
                         Models.player.findOne({ where: { name: player.name } }).then(record => {
-                            Models.stat.upsert({
+                            Models.stats.upsert({
                                 player_id: record.id,
                                 season: player.season,
                                 mode: player.mode,
@@ -136,3 +136,13 @@ getPlayerInfo1 = (accountId, platform, season) => {
     })
     console.log("Player info updated: ", accountId);
 }
+
+updatePlayers = () => {
+    playerList = [];
+    Models.player.findAll().then(players => {
+        updatePlayerList(players);
+    })
+    syncPlayers();
+}
+
+updatePlayers();

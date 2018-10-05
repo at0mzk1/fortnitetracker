@@ -33,7 +33,7 @@ router.get('/players', function (req, res) {
     res.contentType('application/json');
     Models.player.findAll({
         include: [{
-            model: Models.stat
+            model: Models.stats
         }]
     }).then(player => {
         res.send(player);
@@ -58,7 +58,7 @@ router.get('/profile/:user', function (req, res) {
                 required: false,
                 attributes: ['id', 'name', 'platform'],
                 through: {where: {primaryid: true}, attributes: []},
-                include: [{ model: Models.stat}]
+                include: [{ model: Models.stats}]
             }],
             where: { userid: req.params.user },
             attributes: ['id', 'userid', 'email']
@@ -71,7 +71,7 @@ router.get('/profile/:user', function (req, res) {
                         required: false,
                         attributes: ['id', 'name', 'platform'],
                         through: { where: { primaryid: false }, attributes: [] },
-                        include: [{ model: Models.stat }]
+                        include: [{ model: Models.stats }]
                     }],
                     where: { userid: req.params.user }
                 }).then(friends => {
