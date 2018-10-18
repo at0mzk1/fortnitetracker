@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Card, CardBody, Container, Col, Row } from 'mdbreact';
+import { Card, CardTitle, CardBody, Container, Col, Row } from 'mdbreact';
 import './usercard.css';
 import {THEME} from '../theme/theme';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import { Tabs } from '@material-ui/core'
+import CustomTab from '../theme/CustomTab'
 
 class User extends Component {
 
@@ -33,35 +32,28 @@ class User extends Component {
         });
     }
 
-    handleSelect = (event) => {
-        this.setState({ [event.target.name]: event.target.value });
+    handleSelect = (value) => {
+        this.setState({ activeModeKey: value });
     }
 
     generateCard(player) {
-        let userInfo = (<h5>{player.player_id}
-            <FormControl >
-                <InputLabel htmlFor="mode-native" style={{ color: "whitesmoke" }}>Mode</InputLabel>
-                <Select
-                    value={this.state.activeModeKey}
-                    defaultValue={this.state.activeModeKey}
-                    onChange={this.handleSelect}
-                    inputProps={{
-                        name: 'activeModeKey',
-                        id: 'mode-native',
-                    }}
-                    style={{ color: "whitesmoke" }}
-                >
-                    <option value="solo">Solo</option>
-                    <option value="duo">Duo</option>
-                    <option value="squad">Squad</option>
-                </Select>
-            </FormControl>
-        </h5>);
         return (
-            <Card className="text-align-center">
+            <Card className="text-align-center full-width">
+                <CardTitle className='playerCardTitle'>
+                    <Tabs
+                        value={this.state.activeModeKey}
+                        onChange={(k, value) => this.handleSelect(value)}
+                        indicatorColor="primary"
+                        textColor="primary"
+                    >
+                        <CustomTab key={0} value="solo" label="Solo" />
+                        <CustomTab key={1} value="duo" label="Duo" />
+                        <CustomTab key={2} value="squad" label="Squad" />
+                    </Tabs>
+                </CardTitle>
                 <CardBody>
                     <Container fluid>
-                        <UserCardView {...[userInfo, ...player.stats.labels]}/>
+                        <UserCardView {...[(<h5>{player.player_id}</h5>), ...player.stats.labels]}/>
                         <UserCardView {...["current", ...player.stats["current"][this.state.activeModeKey]]} />
                         <UserCardView {...["lifetime", ...player.stats["lifetime"][this.state.activeModeKey]]} />
                     </Container>

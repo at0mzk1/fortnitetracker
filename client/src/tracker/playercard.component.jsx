@@ -75,7 +75,7 @@ class PlayerCard extends Component {
 const PlayerSeasonStats = (props) => {
     let stats;
 
-    if (props[props.activeSeasonKey][props.activeModeKey] == null || props[props.activeSeasonKey][props.activeModeKey].matches === "0") {
+    if (props[props.activeSeasonKey] == null || props[props.activeSeasonKey][props.activeModeKey] == null || props[props.activeSeasonKey][props.activeModeKey].matches === "0") {
      stats = <div className="noStatsCard">
             <div className="centered">
                 <div className="noDataSvg"><Error style={{ fontSize: "100px", padding: "5px" }} /></div>
