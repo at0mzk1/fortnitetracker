@@ -1,48 +1,61 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
-import MyLargeModal from './modal.component';
+import { Navbar, NavbarBrand, NavbarNav, NavbarToggler, Collapse, NavItem, NavLink } from 'mdbreact';
+import Auth from '../util/auth';
+import './header.css';
 
 class Header extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            show: false,
-            activePage: 1
+            collapse: false,
+            isWideEnough: false,
+            active: "Home"
         };
+        this.onClick = this.onClick.bind(this);
+        
     }
 
-    handleSelect(selectedKey) {
+    handleMenuClick(menu) {
         this.setState({
-            activePage: selectedKey
-        })
+            active: menu,
+        });
+    }
+
+    onClick() {
+        this.setState({
+            collapse: !this.state.collapse,
+        });
     }
 
     render() {
-        let lgClose = () => this.setState({ show: false });
-
-        return(
-            <Navbar collapseOnSelect staticTop fluid className="navBar">
-                <Navbar.Header>
-                    <Navbar.Brand>
-                        Fortnite Friends Rankings <small>created by at0mz</small>
-                    </Navbar.Brand>
-                    <Navbar.Toggle />
-                </Navbar.Header>
-                <Navbar.Collapse className="navBarMenu">
-                    <Nav activeKey={this.state.activePage} onSelect={k => this.handleSelect(k)} className="menuItems">
-                        <NavItem eventKey={1} href="/">Home</NavItem>
-                        <NavItem eventKey={2} href="/tracker">Tracker</NavItem>
-                    </Nav>
-                    <Nav pullRight>
-                        <NavItem onClick={() => this.setState({ show: true })}>
-                            Login
-                </NavItem>
-                        <MyLargeModal show={this.state.show} onHide={lgClose} />
-                    </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-        )
+        return (
+            <div className="header">
+                <Navbar color="elegant-color" dark expand="lg" scrolling>
+                        <NavbarBrand href="/" tag="span">
+                            <strong>Fortnite Friends Rankings <small>created by at0mz</small></strong>
+                        </NavbarBrand>
+                    {!this.state.isWideEnough && <NavbarToggler onClick={this.onClick}/>}
+                        <Collapse isOpen={this.state.collapse} navbar>
+                            <NavbarNav left>
+                            <NavItem className={window.location.pathname === "/" ? 'active' : ''}>
+                                <NavLink to="/" onClick={() => this.handleMenuClick("Home")}>Home</NavLink>
+                            </NavItem>
+                            <NavItem className={window.location.pathname === "/tracker" ? 'active' : ''}>
+                                <NavLink to="/tracker" onClick={() => this.handleMenuClick("Tracker")}>Tracker</NavLink>
+                            </NavItem>
+                            </NavbarNav>
+                            <NavbarNav right>
+                            {Auth.isUserAuthenticated() ? <NavItem className="loggedInUser">Welcome{", "}<NavLink to="/profile" >{localStorage.getItem('loggedInUser')}</NavLink>{" "}</NavItem> : null}
+                            <NavItem>
+                                { Auth.isUserAuthenticated() ? <NavLink to="/logout" >Logout</NavLink> : <NavLink to="#" onClick={() => this.props.toggleModal()}>Login</NavLink>}
+                            </NavItem>
+                            </NavbarNav>
+                        </Collapse>
+                    </Navbar>
+                
+            </div>
+        );
     }
 }
 

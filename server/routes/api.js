@@ -1,11 +1,26 @@
 var express = require('express')
 var router = express.Router()
-var rp = require('request-promise');
 const Models = require('../models');
-var cleanResponse = require('../util/responseHandler.js');
+const Fortnite = require("fortnite-api");
+var responseHandler = require('../util/responseHandler.js');
+var playerUtil = require('../util/playerUtil.js')
+const jwt = require('jsonwebtoken');
+const config = require('../config/db');
+const timer = require('../util/timerUtil')
 
-let Players = [];
-let users = ["Conciente", "jrxtepan", "rmena28", "hamlet_rannier", "erickcortorreal2", "micky0512", "wilo_net", "javierskeemrd", "luisfrankrd", "luisjoserd_", "LilRebelz", "littlerflow809", "LilJayO84"];
+let fortniteAPI = new Fortnite(
+    [
+        process.env.apiUser,
+        process.env.apiPassword,
+        process.env.apiLauncherToken,
+        process.env.apiClientToken
+    ],
+    {
+        debug: true
+    }
+);
+
+let platforms = ["pc", "ps4", "xb1"];
 
 let response = function (data, status) {
     return {
@@ -14,105 +29,194 @@ let response = function (data, status) {
     }
 };
 
-var cron = setInterval(function () {
-    syncPlayers();
-}, 1000 * 60 * 60);
-
-syncPlayers = () => {
-    var index = 0;
-    sync = setInterval(function () {
-        getPlayerInfo(index)
-        if (index >= users.length - 1) {
-            index = 0;
-            clearInterval(sync);
-        }
-        else {
-            index++;
-        }
-    }, 3000);
-}
-
-router.get('/player/:player', function (req, res) {
-    res.contentType('application/json');
-    Models.player.findAll({
-        where: {
-            name: req.params.player
-        },
-        include: [{
-            model: Models.stat
-        }]
-    }).then(player => {
-        res.send(player);
-    })
-});
-
 router.get('/players', function (req, res) {
     res.contentType('application/json');
     Models.player.findAll({
         include: [{
-            model: Models.stat
+            model: Models.stats
         }]
     }).then(player => {
         res.send(player);
     })
 });
 
-router.post('/user', function (req, res) {
-    console.log(req.body);
-    res.send("Response from API");
+router.get('/timer', function (req, res) {
+    let timeLeft = timer.getTimer();
+    res.status(200).json({
+        success: true,
+        timeLeft
+    });
 });
 
-router.get('/user/:userId', function (req, res) {
-    console.log(req.body);
-    Models.user.findAndCountAll({
-        where: {
-            userid: req.params.userId
-        }
-    }).then(user => {
-        if (user.count > 0)
-            res.send(user);
-        else
-            res.send({ "response": "User not found" });
-    })
-});
-
-getPlayerInfo = (i) => {
-    var options = {
-        uri: 'https://api.fortnitetracker.com/v1/profile/psn/' + users[i],
-        qs: {
-        },
-        headers: {
-            'TRN-Api-Key': '92966a1e-ff13-4493-92e6-e44679f2e550'
-        },
-        json: true
-    }
-
-    rp(options).then((response) => {
-        response.json;
-        Players = cleanResponse.cleanResponse(response);
-        Players.map((player, i) => {
-            Models.player.upsert({
-                name: player.name,
-                accountId: player.accountId
-            }).then(() => {
-                Models.player.findOne({ where: { name: player.name } }).then(record => {
-                    Models.stat.upsert({
-                        player_id: record.id,
-                        season: player.season,
-                        mode: player.mode,
-                        rating: player.trn_rating,
-                        wins: player.wins,
-                        top10: player.top_10,
-                        kd: player.kd,
-                        matches: player.matches,
-                        kills: player.kills,
-                        avg_match_time: player.avg_match_time
+router.get('/profile/:user', function (req, res) {
+    
+    Models.user
+        .find({
+            include: [{
+                model: Models.player,
+                as: 'players',
+                required: false,
+                attributes: ['id', 'name', 'platform'],
+                through: {where: {primaryid: true}, attributes: []},
+                include: [{ model: Models.stats}]
+            }],
+            where: { userid: req.params.user },
+            attributes: ['id', 'userid', 'email']
+        }).then(primary => {
+            Models.user.scope('noAttributes')
+                .find({
+                    include: [{
+                        model: Models.player,
+                        as: 'players',
+                        required: false,
+                        attributes: ['id', 'name', 'platform'],
+                        through: { where: { primaryid: false }, attributes: [] },
+                        include: [{ model: Models.stats }]
+                    }],
+                    where: { userid: req.params.user }
+                }).then(friends => {
+                    res.status(200).json({
+                        success: true,
+                        id: primary.id,
+                        userid: primary.userid,
+                        email: primary.email,
+                        primary: responseHandler.formatPlayerResponse(primary.players, "primary"),
+                        friends: responseHandler.formatPlayerResponse(friends.players, "friends")
                     });
                 })
+        })
+});
+
+router.get('/checkPlayer/:player', function (req, res) {
+    Models.player
+        .findOne({
+            where: { name: req.params.player },
+            attributes: ['id', 'name', 'accountId', 'platform'],
+        }).then(player => {
+            if(player == null) {
+               playerUtil.checkPlayer(req.params.player, function (stats, notFound, err) {
+                   if (stats != null && platforms.includes(stats.platform) && !res.headersSent)
+                       addRelationship(req.headers.authorization.substr(7), stats, res);
+                   if (notFound == 2 && !res.headersSent)
+                       res.status(400).json({
+                           success: false,
+                           err
+                       });
+                });
+            }
+            else {
+                addRelationship(req.headers.authorization.substr(7), player, res);
+            }
+        }).catch(err => {
+            res.send(err);
+        })
+});
+
+router.get('/removePlayer/:player', function (req, res) {
+    Models.player
+        .findOne({
+            where: { name: req.params.player },
+            attributes: ['id', 'name', 'accountId', 'platform'],
+        }).then(player => {
+            if (player == null) {
+                playerUtil.checkPlayer(req.params.player, function (stats, notFound, err) {
+                    if (stats != null && platforms.includes(stats.platform) && !res.headersSent)
+                        removeRelationship(req.headers.authorization.substr(7), stats, res);
+                    if (notFound == 2 && !res.headersSent)
+                        res.status(400).json({
+                            success: false,
+                            err
+                        });
+                });
+            }
+            else {
+                removeRelationship(req.headers.authorization.substr(7), player, res);
+            }
+        }).catch(err => {
+            res.send(err);
+        })
+});
+
+router.get('/news', function(req, res) {
+    fortniteAPI.login().then(() => {
+        fortniteAPI
+            .getFortniteNews("en")
+            .then(news => {
+                res.json({
+                    success: true,
+                    news
+                });
             })
+            .catch(err => {
+                res.status(400).json({
+                    success: false,
+                    message: err
+                });
+            });
+    });
+})
+
+addRelationship = (token, player, res) => {
+    return jwt.verify(token, config.jwtSecret, function (err, decoded) {
+        if (err) {
+            return res.status(400).json({
+                success: false,
+                message: err
+            });
+        }
+        let currentDate = new Date();
+        currentDate.setHours(currentDate.getHours() - 2);
+
+        Models.player.findOrCreate({ where: {
+            name: player.name,
+            accountId: player.accountId,
+            platform: player.platform
+        }, defaults: { updatedAt: currentDate }
+        }).spread((player, created) => {
+                Models.user
+                    .findOne({
+                        where: { userid: decoded.sub }
+                    }).then(user => {
+                        user.addPlayer(player, { through: { attributes: [] } })
+
+                    });
+            })
+        return res.status(200).json({
+        success: true,
+        player
         });
-    })
-    console.log("Player info updated: ", users[i]);
+    });
+}
+
+removeRelationship = (token, player, res) => {
+    return jwt.verify(token, config.jwtSecret, function (err, decoded) {
+        if (err) {
+            return res.status(400).json({
+                success: false,
+                message: err
+            });
+        }
+        let currentDate = new Date();
+        currentDate.setHours(currentDate.getHours() - 2);
+
+        if(player != null) {
+            Models.user
+                .findOne({
+                    where: { userid: decoded.sub }
+                }).then(user => {
+                    user.removePlayer(player, { through: { attributes: [] } })
+                });
+            return res.status(200).json({
+                success: true,
+                player
+            });
+        }
+        else
+            return res.status(400).json({
+                success: false,
+                message: "Player does not exist in the system."
+            });        
+    });
 }
 
 module.exports = router;

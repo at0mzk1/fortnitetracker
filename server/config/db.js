@@ -1,3 +1,6 @@
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
+
 module.exports = {
     username: process.env.userId,
     password: process.env.password,
@@ -5,5 +8,6 @@ module.exports = {
     host: process.env.host,
     port: 3306,
     dialect: 'mysql',
-    jwtSecret: "739D3383D4B330F05E0ECB937DEABEA2FA5F9927DD0BFEDC411B15343EBE05CC"
+    operatorsAliases: Op, // use Sequelize.Op
+    jwtSecret: process.env.secret
 };

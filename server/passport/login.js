@@ -12,13 +12,14 @@ module.exports = new PassportLocalStrategy({
     session: false,
     passReqToCallback: true
 }, (req, userid, password, done) => {
+    
     const userData = {
         userid: userid,
         password: password.trim()
     };
 
     // find a user by User ID
-    return Models.user.findOne({
+    return Models.user.scope('validatePassword').findOne({
         where: { userid: userData.userid }
     }).then(user => {
         if (user == null) {
@@ -27,7 +28,6 @@ module.exports = new PassportLocalStrategy({
 
             return done(error);
         }
-
         // check if a hashed user's password is equal to a value saved in the database
         return user.validPassword(userData.password, (passwordErr, isMatch) => {
             
@@ -39,11 +39,15 @@ module.exports = new PassportLocalStrategy({
             }
 
             const payload = {
-                sub: user.id
+                sub: user.userid,
+                uid: req.headers["user-agent"].replace(/\D/g, "")
             };
 
+            let expiresIn = req.body.remember ? "1y" : "1h";
+
             // create a token string
-            const token = jwt.sign(payload, config.jwtSecret);
+            const token = jwt.sign(payload, config.jwtSecret, { expiresIn: expiresIn});
+
             const data = {
                 name: user.userid
             };

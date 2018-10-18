@@ -1,8 +1,4 @@
-.navBar {
-    
-    background-color: white;
-}
-
-.navBar container {
-    margin-right:0;
+.loggedInUser {
+    display: flex;
+    align-items: center;
 }

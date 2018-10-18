@@ -17,15 +17,15 @@ module.exports = new PassportLocalStrategy({
     };
     
     Models.user.findOrCreate({ where: { 
-        userid: userData.userid,
-        email: userData.email
+        userid: userData.userid
     },
         defaults: { // set the default properties if it doesn't exist
-            password: userData.password
+            password: userData.password,
+            email: userData.email
         }
     }).spread((user, created) => {
         if (!created) {
-            const error = new Error('User ID already exists!');
+            const error = new Error('User ID already exists');
             error.name = 'ExistingUserError';
             return done(error);
         }

@@ -1,0 +1,7 @@
+label[data-error], label[data-success] {
+	width: 100%;
+}
+
+.md-form {
+    margin-bottom: 3rem !important;
+}
